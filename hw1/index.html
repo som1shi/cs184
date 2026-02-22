@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS 184 Homework 1 &mdash; Rasterizer</title>
+  <style>
+    :root {
+      --bg: #fdfdfd;
+      --fg: #1a1a1a;
+      --accent: #2563eb;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --card-bg: #ffffff;
+      --code-bg: #f1f5f9;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.7;
+      font-size: 17px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: #f1f5f9;
+      padding: 3.5rem 1.5rem 3rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+    }
+
+    header p {
+      color: #94a3b8;
+      font-size: 1.05rem;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.7rem 1.5rem;
+      display: flex;
+      gap: 0.4rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 0.35rem 0.9rem;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+
+    nav a:hover {
+      color: var(--accent);
+      background: #eff6ff;
+    }
+
+    main {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 5rem;
+    }
+
+    section {
+      margin-bottom: 3.5rem;
+    }
+
+    h2 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      padding-bottom: 0.45rem;
+      border-bottom: 2px solid var(--accent);
+      display: inline-block;
+    }
+
+    p {
+      margin-bottom: 1rem;
+      color: #334155;
+    }
+
+    .figures {
+      display: grid;
+      gap: 1.2rem;
+      margin: 1.5rem 0;
+    }
+
+    .figures.two { grid-template-columns: 1fr 1fr; }
+    .figures.three { grid-template-columns: 1fr 1fr 1fr; }
+    .figures.four { grid-template-columns: 1fr 1fr; }
+
+    @media (max-width: 700px) {
+      .figures.two,
+      .figures.three,
+      .figures.four { grid-template-columns: 1fr; }
+    }
+
+    figure {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 0;
+    }
+
+    figure img {
+      width: 100%;
+      display: block;
+    }
+
+    figcaption {
+      padding: 0.6rem 0.85rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    .placeholder {
+      aspect-ratio: 4/3;
+      background: var(--code-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-style: italic;
+    }
+
+    code {
+      background: var(--code-bg);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      font-size: 0.92em;
+      font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>CS 184: Homework 1: Rasterizer</h1>
+  <p>Sarvagya Somvanshi and Pranav Subbarayan</p>
+</header>
+
+<nav>
+  <a href="#overview">Overview</a>
+  <a href="#task1">Task 1</a>
+  <a href="#task2">Task 2</a>
+  <a href="#task3">Task 3</a>
+  <a href="#task4">Task 4</a>
+  <a href="#task5">Task 5</a>
+  <a href="#task6">Task 6</a>
+</nav>
+
+<main>
+
+  <!-- ============ OVERVIEW ============ -->
+  <section id="overview">
+    <h2>Overview</h2>
+
+    <p>
+      In this assignment, we built a 2D rasterizer from scratch. Starting from triangle
+      rasterization with a bounding box and edge function test, we worked up through supersampling
+      for antialiasing, transform matrices for positioning objects, barycentric coordinates for
+      color interpolation, and finally texture mapping with pixel and level sampling.
+    </p>
+    <p>
+      The most interesting thing we learned was how each technique addresses aliasing at a different
+      level. Supersampling attacks it at the geometry level, pixel sampling at the texel level, and
+      level sampling at the resolution level. Seeing how they interact and complement each other
+      made it clear why real renderers combine all three to produce images with minimal aliasing
+      artifacts.
+    </p>
+  </section>
+
+  <!-- ============ TASK 1 ============ -->
+  <section id="task1">
+    <h2>Task 1: Rasterizing Single-Color Triangles</h2>
+
+    <p>
+      To rasterize a triangle, we first compute a bounding box around it. We take the floor of each
+      vertex's minimum x and y and the ceiling of the maximums, then clamp those to the screen
+      edges. Then for each pixel inside that box, we test whether its center point at
+      <code>(x + 0.5, y + 0.5)</code> is inside the triangle.
+    </p>
+    <p>
+      For each edge of the triangle, we run an edge function that computes a cross product. We
+      determine winding order by computing the triangle's signed area, then check that all three
+      edge values match that sign. Zero values on a boundary pass either check, so edge pixels are
+      always filled. Zero-area triangles are skipped entirely.
+    </p>
+    <p>
+      Our algorithm is no worse than one that checks every sample within the bounding box because it
+      checks exactly those samples and no others. That box is just the smallest rectangle that fits
+      around the triangle, found by flooring the minimum and ceiling the maximum x and y values
+      across the three vertices. So, in the worst case we're doing exactly the same work as a
+      standard bounding box traversal.
+    </p>
+    <p>
+      The pixel inspector here is centered on the tip of the red triangle in
+      <code>test4.svg</code>, where the aliasing effect is most visible along two of its edges.
+    </p>
+
+    <div class="figures">
+      <figure>
+        <img src="images/task1.png" alt="Task 1 screenshot">
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ TASK 2 ============ -->
+  <section id="task2">
+    <h2>Task 2: Antialiasing by Supersampling</h2>
+
+    <p>
+      We used a grid-based supersampling algorithm and a flat array data structure. Specifically, we
+      used a <code>std::vector&lt;Color&gt;</code> called <code>sample_buffer</code> sized at
+      <code>width &times; height &times; sample_rate</code> to store all subsamples as floating
+      point colors before anything gets written to the framebuffer. Within each pixel, the
+      subsamples are arranged in a <code>spp_side &times; spp_side</code> grid where
+      <code>spp_side = sqrt(sample_rate)</code>, and each subsample's position within the pixel is
+      <code>(x + (i + 0.5) / spp_side, y + (j + 0.5) / spp_side)</code>.
+    </p>
+    <p>
+      Supersampling is useful because it reduces aliasing&mdash;the jagged artifacts we observed in
+      Task 1 when sampling only once per pixel. A single sample only tells us whether the pixel
+      center is inside or outside the triangle, which gives a hard on/off result. By taking multiple
+      samples per pixel and averaging them, we reduce aliasing and produce smoother edges because
+      partial triangle coverage contributes proportionally to the final pixel color. In practice
+      this means pixels near triangle edges get blended colors rather than hard on/off values, which
+      is what produces the antialiasing effect shown below.
+    </p>
+    <p>
+      We modified several components of the pipeline to support supersampling.
+      <code>set_sample_rate</code> and <code>set_framebuffer_target</code> were updated to resize
+      the sample buffer to <code>width &times; height &times; sample_rate</code> whenever the
+      sample rate or window dimensions change. <code>fill_pixel</code> was updated to write the
+      same color to all subsamples for a given pixel, so points and lines continue to render
+      correctly without being supersampled. <code>rasterize_triangle</code> now writes directly
+      into the sample buffer instead of the framebuffer. Finally,
+      <code>resolve_to_framebuffer</code> was updated to average all subsamples for each pixel down
+      to a single color, clamp the result to [0,&nbsp;1], and convert to 8-bit unsigned integers
+      for display.
+    </p>
+
+    <div class="figures four">
+      <figure>
+        <img src="images/task1.png" alt="Sample rate 1">
+        <figcaption>Sample rate 1</figcaption>
+      </figure>
+      <figure>
+        <img src="images/task2.1.png" alt="Sample rate 4">
+        <figcaption>Sample rate 4</figcaption>
+      </figure>
+      <figure>
+        <img src="images/task2.2.png" alt="Sample rate 16">
+        <figcaption>Sample rate 16</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      At sample rate 1, the triangle tips show obvious staircase aliasing since each pixel is either
+      fully inside or outside the triangle. At rate 4 the edges soften noticeably, and at rate 16
+      they are much smoother. Higher sample rates produce a more accurate estimate of partial
+      triangle coverage per pixel, which is most visible at thin corners where coverage changes
+      rapidly.
+    </p>
+  </section>
+
+  <!-- ============ TASK 3 ============ -->
+  <section id="task3">
+    <h2>Task 3: Transforms</h2>
+
+    <p>
+      The three 2D transforms are implemented as 3&times;3 matrices in homogeneous coordinates. For
+      translation, an identity matrix is used as the base and the x and y offsets are placed in the
+      last column. For scaling, the two scale factors are placed on the diagonal with the rest of
+      the matrix set to match identity. For rotation, the input angle is first converted from
+      degrees to radians, then the cosine and sine are computed and arranged into the standard
+      counter-clockwise 2D rotation matrix, with the negative sine in the upper right of the
+      2&times;2 block and positive sine in the lower left.
+    </p>
+    <p>
+      For the robot, we wanted to make Cubeman look like he's waving with his left arm raised up
+      toward his head, while his right arm rests down by his side. We achieved this by adding a
+      <code>rotate(-70)</code> transform to the left arm group and right arm group, rotating them
+      around their attachment points. Next, we scaled the head up from
+      <code>(0.5, 0.5)</code> to <code>(0.55, 0.55)</code> to improve its proportion relative to
+      the torso. Finally, we changed every polygon's fill from <code>#EF161F</code> to
+      <code>#808080</code> to give Cubeman a sleek metallic look.
+    </p>
+
+    <div class="figures">
+      <figure>
+        <img src="images/task3.png" alt="Cubeman waving">
+        <figcaption>Cubeman waving with a metallic look.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ TASK 4 ============ -->
+  <section id="task4">
+    <h2>Task 4: Barycentric Coordinates</h2>
+
+    <p>
+      Barycentric coordinates express any point inside a triangle as a weighted sum of its three
+      vertices, where the weights (&alpha;, &beta;, &gamma;) are non-negative and sum to 1. The
+      figure below shows this concretely: the top vertex is pure red (&alpha;=1, &beta;=0,
+      &gamma;=0), the bottom-left is pure green, and the bottom-right is pure blue. A point halfway
+      between the red and green vertices gets &alpha;=0.5, &beta;=0.5, &gamma;=0, producing yellow.
+      The center of the triangle has &alpha;=&beta;=&gamma;=1/3, giving equal contributions from all
+      three vertices and producing the brown seen in the middle.
+    </p>
+
+    <div class="figures two">
+      <figure>
+        <img src="images/task4.1.png" alt="Barycentric color triangle">
+      </figure>
+      <figure>
+        <img src="images/task4.2.png" alt="Color wheel">
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ TASK 5 ============ -->
+  <section id="task5">
+    <h2>Task 5: "Pixel Sampling" for Texture Mapping</h2>
+
+    <p>
+      Pixel sampling is the process of determining what color to assign to a screen pixel by looking
+      up a value from a texture image. Since texture coordinates are continuous but the texture
+      itself is a discrete grid of texels, we need a way to map a floating point UV coordinate to an
+      actual color.
+    </p>
+    <p>
+      In <code>rasterize_textured_triangle</code>, we compute barycentric coordinates for each
+      sample point and use them to interpolate the UV coordinates across the triangle surface. That
+      interpolated UV is then passed to either <code>sample_nearest</code> or
+      <code>sample_bilinear</code> depending on the current <code>psm</code> setting.
+    </p>
+    <p>
+      <strong>Nearest neighbor sampling</strong> snaps the UV coordinate to the closest texel by
+      rounding, returning that single texel's color. It's fast but can look blocky when the texture
+      is magnified since there's no blending between texels.
+    </p>
+    <p>
+      <strong>Bilinear sampling</strong> instead takes the four texels surrounding the UV coordinate
+      and blends between them using linear interpolation in both x and y. This produces smoother
+      results at the cost of a few extra texture lookups.
+    </p>
+    <p>
+      The difference between nearest and bilinear is most pronounced in three situations: when the
+      texture is magnified and a single texel maps to many screen pixels, along sharp color
+      boundaries where hard texel snapping creates visible blocks, and along diagonal edges where
+      nearest produces staircase artifacts. Bilinear mitigates all three by interpolating across the
+      four nearest texels.
+    </p>
+
+    <div class="figures four">
+      <figure>
+        <img src="images/task5.1.png" alt="Nearest, sample rate 1">
+        <figcaption>Nearest sampling, sample rate 1</figcaption>
+      </figure>
+      <figure>
+        <img src="images/task5.3.png" alt="Bilinear, sample rate 1">
+        <figcaption>Bilinear sampling, sample rate 1</figcaption>
+      </figure>
+      <figure>
+        <img src="images/task5.2.png" alt="Nearest, sample rate 16">
+        <figcaption>Nearest sampling, sample rate 16</figcaption>
+      </figure>
+      <figure>
+        <img src="images/task5.4.png" alt="Bilinear, sample rate 16">
+        <figcaption>Bilinear sampling, sample rate 16</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      At sample rate 1, nearest sampling appears more jagged around the eye than bilinear because
+      nearest simply snaps to the closest texel with no blending. Bilinear interpolates across the
+      four surrounding texels, which softens those transitions. At sample rate 16, the two look more
+      similar since supersampling already smooths out much of the aliasing, though bilinear still
+      produces slightly more uniform color transitions around the eye glaze.
+    </p>
+  </section>
+
+  <!-- ============ TASK 6 ============ -->
+  <section id="task6">
+    <h2>Task 6: "Level Sampling" with Mipmaps for Texture Mapping</h2>
+
+    <p>
+      Level sampling is about choosing which mip level to read from based on how compressed the
+      texture appears on screen. When a surface is far away or angled, many texels collapse into a
+      single pixel and reading from the full resolution texture produces aliasing. Mipmaps solve
+      this by precomputing half-resolution copies of the texture, and level sampling picks the right
+      one.
+    </p>
+    <p>
+      Here is how we implemented this: in <code>rasterize_textured_triangle</code>, we compute
+      barycentric UV coordinates for the current sample point and two neighbors offset by one pixel
+      in x and y, passing them to <code>Texture::get_level</code>. The differences between these
+      tell us how fast UV is changing across the screen. After scaling by the texture dimensions to
+      get the rate of change in texel space, we take log<sub>2</sub> of the larger magnitude. A
+      bigger footprint means more texels per pixel, so we step down to a coarser mip level.
+    </p>
+    <p>
+      In <code>Texture::sample</code>, <code>L_ZERO</code> always reads from level 0 regardless of
+      the computed level. <code>L_NEAREST</code> rounds the level to the nearest integer and samples
+      there. <code>L_LINEAR</code> samples from the two bracketing integer levels and blends between
+      them weighted by the fractional part&mdash;this becomes trilinear filtering when paired with
+      bilinear pixel sampling.
+    </p>
+
+    <h3 style="margin-top:1.5rem; margin-bottom:0.8rem; font-size:1.15rem;">Tradeoffs Between Sampling Techniques</h3>
+
+    <p>
+      <strong>Pixel sampling:</strong> The simplest approach and requires no extra memory. Nearest
+      is faster but can look blocky, while bilinear smooths things out by blending between nearby
+      texels. Neither one accounts for how zoomed in or out the texture is though.
+    </p>
+    <p>
+      <strong>Level sampling:</strong> Requires storing extra copies of the texture at lower
+      resolutions, but the payoff is that when a texture is minified we're reading from an
+      appropriately sized version instead of the full image. This reduces aliasing that pixel
+      sampling alone cannot fix.
+    </p>
+    <p>
+      <strong>Supersampling:</strong> The most effective but also the most costly, as memory and
+      render time both go up with the sample rate. The advantage over the other two is that it
+      handles geometry edge aliasing too, not just texture aliasing.
+    </p>
+
+    <h3 style="margin-top:1.5rem; margin-bottom:0.8rem; font-size:1.15rem;">Sampling Method Comparisons</h3>
+
+    <p>
+      We chose a checkerboard PNG because the sharp contrast between black and white squares makes
+      aliasing artifacts easy to spot. We focused on a corner where two skewed squares meet, since
+      the perspective distortion compresses many texels into a small screen region and makes
+      differences between sampling methods visible.
+    </p>
+
+    <div class="figures four">
+      <figure>
+        <img src="images/task6_lnearest_plinear.png" alt="L_NEAREST + P_LINEAR">
+        <figcaption>L_NEAREST + P_LINEAR</figcaption>
+      </figure>
+      <figure>
+        <img src="images/task6_lnearest_pnearest.png" alt="L_NEAREST + P_NEAREST">
+        <figcaption>L_NEAREST + P_NEAREST</figcaption>
+      </figure>
+      <figure>
+        <img src="images/task6_lzero_plinear.png" alt="L_ZERO + P_LINEAR">
+        <figcaption>L_ZERO + P_LINEAR</figcaption>
+      </figure>
+      <figure>
+        <img src="images/task6_lzero_pnearest.png" alt="L_ZERO + P_NEAREST">
+        <figcaption>L_ZERO + P_NEAREST</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      <strong>L_NEAREST + P_LINEAR</strong> produced the smoothest result, with soft gradients of
+      gray transitioning along the edges of the squares. The boundaries between black and white were
+      fuzzy rather than sharp, as bilinear pixel sampling blended neighboring texels and the nearest
+      mipmap level reduced high-frequency detail.
+    </p>
+    <p>
+      <strong>L_NEAREST + P_NEAREST</strong> was slightly more jagged. The skewed square edges were
+      surrounded by a gray outline, but the transitions were less smooth than with bilinear sampling
+      since each pixel simply snapped to its nearest texel.
+    </p>
+    <p>
+      <strong>L_ZERO + P_LINEAR</strong> appeared more granular with a jagged pattern. The gray
+      outlines disappeared in some places, making the edges of the squares look more sharply black.
+      Since L_ZERO always samples from the full-resolution texture regardless of minification, more
+      aliasing crept in even though bilinear filtering softened it somewhat.
+    </p>
+    <p>
+      <strong>L_ZERO + P_NEAREST</strong> looked similar in shape to L_ZERO + P_LINEAR but was
+      noticeably more black overall. Some of the gray corner pixels that appeared in L_ZERO +
+      P_LINEAR had turned fully black. This combination had the least amount of gray of all four, as
+      neither the level sampling nor the pixel sampling provided any blending or antialiasing
+      .
+    </p>
+  </section>
+
+</main>
+
+<footer>
+  CS 184: Computer Graphics and Imaging &mdash; Spring 2026
+</footer>
+
+</body>
+</html>
