@@ -189,7 +189,11 @@
     <h2>Overview</h2>
 
     <p>
-      [overview input]
+      In this project, we built a geometric modelling tool that can evaluate smooth curves and surfaces, and perform dynamic mesh manipulations. We began by implementing de Casteljau's algorithm to evaluate Bezier curves and surfaces, then transitioned into mesh processing using the half-edge data structure. We implemented fundamental operations including area-weighted vertex normals for smooth shading, edge flips, and edge splits (including boundary support). Finally, we implemented a robust mesh upsampling pipeline using the Butterfly subdivision scheme.
+    
+    </p>
+    <p>
+      The most interesting aspect of this project was seeing how simple linear interpolations on 1D curves scale into complex 3D surface subdivision. We learned that while the math behind these operations is often straightforward.
     </p>
   </section>
 
@@ -198,7 +202,7 @@
     <h2>Part 1: Bezier Curves with 1D de Casteljau Subdivision</h2>
 
     <p>
-      De Casteljau's algorithm evaluates a point on a Bezier curve at some parameter t (between 0 and 1) through repeated linear interpolation. Given n control points, the algorithm repeatedly linearly interpolates between each adjacent pair at parameter t, reducing n points to n-1 each step until a single point remains — the location on the curve at t. We implemented this by defining a vector that stores the interpolated points for each step. For each adjacent pair of points, we compute (1 - t) * points[i] + t * points[i+1] and append the result. This is called repeatedly until one point remains.
+      De Casteljau's algorithm evaluates a point on a Bezier curve at some parameter t (between 0 and 1) through repeated linear interpolation. Given n control points, the algorithm repeatedly linearly interpolates between each adjacent pair at parameter t, reducing n points to n-1 each step until a single point remains: the location on the curve at t. We implemented this by defining a vector that stores the interpolated points for each step. For each adjacent pair of points, we compute (1 - t) * points[i] + t * points[i+1] and append the result. This is called repeatedly until one point remains.
     </p>
 
     <div class="figures three">
@@ -261,7 +265,7 @@
     <h2>Part 3: Area-Weighted Vertex Normals</h2>
 
     <p>
-      To compute the area-weighted vertex normal, we loop through all neighboring triangles of a vertex using the half-edge data structure. For each triangle, we take its three vertex positions and compute the cross product of two of its edges. This gives us a vector pointing perpendicular to the triangle whose length naturally scales with the triangle's area — so bigger triangles automatically contribute more to the final result. We sum these vectors across all neighboring triangles and normalize at the end to get the final unit normal. This produces smoother shading compared to flat shading, as seen in the screenshots below.
+      To compute the area-weighted vertex normal, we loop through all neighboring triangles of a vertex using the half-edge data structure. For each triangle, we take its three vertex positions and compute the cross product of two of its edges. This gives us a vector pointing perpendicular to the triangle whose length naturally scales with the triangle's area so bigger triangles automatically contribute more to the final result. We sum these vectors across all neighboring triangles and normalize at the end to get the final unit normal. This produces smoother shading compared to flat shading, as seen in the screenshots below.
     </p>
 
     <div class="figures two">
@@ -282,10 +286,14 @@
     <h3 style="margin-top:1.5rem; margin-bottom:0.8rem; font-size:1.15rem;">Implementation</h3>
 
     <p>
-      The edge flip operation modifies the connectivity of a pair of triangles sharing an edge by reassigning the shared edge to connect the opposing vertices, without adding or removing any underlying mesh elements. We implemented this by first performing a boundary check to ensure the given edge and its adjacent faces are strictly interior. Next, we collected all elements in the local neighborhood—10 half-edges, 5 edges, 4 vertices, and 2 faces—using next() and twin() traversals. We then updated the mesh topology by calling setNeighbors(...) on the 6 inner half-edges to redefine the winding order of the two newly formed triangles. Finally, we explicitly reassigned the halfedge() pointers for every affected vertex, edge, and face to guarantee no dangling pointers were left referencing outdated topological states.
+      The edge flip operation modifies the connectivity of a pair of triangles sharing an edge by reassigning the shared edge to connect the opposing vertices, without adding or removing any underlying mesh elements. 
+      
+      We implemented this by first performing a boundary check to ensure the given edge and its adjacent faces are strictly interior. 
+      
+      Next, we collected all elements in the local neighborhood—10 half-edges, 5 edges, 4 vertices, and 2 faces using next() and twin() traversals. We then updated the mesh topology by calling setNeighbors(...) on the 6 inner half-edges to redefine the winding order of the two newly formed triangles. Finally, we explicitly reassigned the halfedge() pointers for every affected vertex, edge, and face to guarantee no dangling pointers were left referencing outdated topological states.
     </p>
 
-    <h3 style="margin-top:1.5rem; margin-bottom:0.8rem; font-size:1.15rem;">Debugging Journey: The "Black Hole" Incident</h3>
+    <h3 style="margin-top:1.5rem; margin-bottom:0.8rem; font-size:1.15rem;">Debugging: The Black Hole Incident</h3>
 
     <p>
       We had a bug where flipping an edge caused the triangles to disappear completely, leaving a "black hole" in the teapot. We traced this back to a fundamental misunderstanding of how vertices map to half-edges. We had written:
@@ -352,7 +360,7 @@ VertexIter a = ca->vertex();</code></pre>
     <h3 style="margin-top:1.5rem; margin-bottom:0.8rem; font-size:1.15rem;">Extra Credit: Boundary Edge Splits</h3>
 
     <p>
-      To support meshes with boundaries (Extra Credit), we added a conditional branch to detect if the target edge lies on a boundary loop. If so, we allocate only half the new elements (1 face, 2 edges, 4 half-edges) and splice the new vertex directly into the virtual boundary polygon by updating the outer half-edge's next pointer, allowing the boundary to split in constant time without traversing the entire perimeter.
+      To support meshes with boundaries, we added a conditional branch to detect if the target edge lies on a boundary loop. If so, we allocate only half the new elements (1 face, 2 edges, 4 half-edges) and splice the new vertex directly into the virtual boundary polygon by updating the outer half-edge's next pointer, allowing the boundary to split in constant time without traversing the entire perimeter.
     </p>
 
 
@@ -361,11 +369,11 @@ VertexIter a = ca->vertex();</code></pre>
 
     <div class="figures two">
       <figure>
-        <img src="images/p5.3.0.png" alt="Boundary edge split — original">
+        <img src="images/p5.3.0.png" alt="Boundary edge split: original">
         <figcaption>Original</figcaption>
       </figure>
       <figure>
-        <img src="images/p5.3.1.png" alt="Boundary edge split — done">
+        <img src="images/p5.3.1.png" alt="Boundary edge split: done">
         <figcaption>EC done</figcaption>
       </figure>
     </div>
@@ -378,46 +386,9 @@ VertexIter a = ca->vertex();</code></pre>
     <h3 style="margin-top:1.5rem; margin-bottom:0.8rem; font-size:1.15rem;">Implementation</h3>
 
     <p>
-      Loop subdivision upsamples a mesh by subdividing each triangle into four smaller triangles and updating vertex positions based on a specific weighting scheme. We implemented this as a multi-step process to ensure the original mesh topology remained available for all weight calculations. First, we computed the updated positions for all existing vertices using a weighted average of their neighbors—specifically $(1 - n \cdot u) \cdot \text{original_position} + u \cdot \text{original_neighbor_sum}$, where $u$ is a constant based on the vertex degree $n$. Second, we calculated the positions for new vertices that would be inserted at edge midpoints using the formula $3/8 \cdot (A + B) + 1/8 \cdot (C + D)$ for the shared edge $(A, B)$ and opposite vertices $C$ and $D$. Once positions were cached, we performed 4-1 subdivision by splitting every original edge and flipping any new edge that connected an original vertex to a new vertex. Finally, we updated all vertex positions to their newly computed values.
-    </p>
-    
-
-    <ol style="margin:1rem 0 1rem 1.5rem; color:#334155;">
-      <li style="margin-bottom:0.5rem;"><strong>Calculate Positions:</strong> Calculate new positions for old vertices and new edge midpoints before modifying the mesh topology.</li>
-      <li style="margin-bottom:0.5rem;"><strong>Split:</strong> Iterate through a pre-saved list of original edges and split them.</li>
-      <li style="margin-bottom:0.5rem;"><strong>Flip:</strong> Iterate through all edges and flip any isNew edge that connects an old vertex to a new vertex.</li>
-      <li style="margin-bottom:0.5rem;"><strong>Finalize:</strong> Copy newPosition to position for all vertices.</li>
-    </ol>
-<p>
-  For the extra credit, we extended our upsampler to support meshes with boundaries and implemented the <b>Modified Butterfly subdivision scheme</b>. To handle boundaries, we modified the vertex update rules: for a boundary vertex, the new position is computed using a 1D smoothing mask $3/4 \cdot v + 1/8 \cdot (b_1 + b_2)$, and new edge vertices are placed exactly at the midpoint $1/2 \cdot (A + B)$. Additionally, we implemented Butterfly subdivision, which is an interpolating scheme where original vertices remain at their initial positions. For new vertices, we implemented an 8-point stencil that reaches two rings out into the mesh, applying weights of $1/2$ to endpoints, $1/8$ to adjacent opposite vertices, and $-1/16$ to the four vertices in the secondary ring. This implementation successfully preserves the original vertex locations while generating a smooth, interpolated surface.
-</p>
-
-    <h3 style="margin-top:1.5rem; margin-bottom:0.8rem; font-size:1.15rem;">Debugging Journey: Loop Ordering</h3>
-
-    <p>
-      We encountered a severe bug where our upsampled mesh looked like a tangled ball of spikes. We realized we had accidentally placed the 8-point stencil calculation after the splitEdge loop. Because splitEdge alters the fundamental topology of the mesh, our h->next()->twin()->next() traversals were getting trapped inside the newly created subdivided triangles instead of reaching out to the next structural ring. Reordering the math to happen before the splits fixed the traversal instantly.
+      Loop subdivision upsamples a mesh by subdividing each triangle into four smaller triangles and updating vertex positions based on a specific weighting scheme. We implemented this as a multi-step process to ensure the original mesh topology remained available for all weight calculations. First, we computed the updated positions for all existing vertices using a weighted average of their neighbors—specifically (1 - n * u) * original_position + u * original_neighbor_sum, where u is a constant based on the vertex degree n. Second, we calculated the positions for new vertices that would be inserted at edge midpoints using the formula 3/8 * (A + B) + 1/8 * (C + D) for the shared edge (A, B) and opposite vertices C and D. Once positions were cached, we performed 4-1 subdivision by splitting every original edge and flipping any new edge that connected an original vertex to a new vertex. Finally, we updated all vertex positions to their newly computed values.
     </p>
 
-    <h3 style="margin-top:1.5rem; margin-bottom:0.8rem; font-size:1.15rem;">Observations on Mesh Behavior</h3>
-
-    <p>
-      <strong>Sharp Corners and Edges:</strong> When you subdivide a mesh, sharp corners and hard edges quickly lose their definition and smooth out into organic, rounded curves.
-    </p>
-    <p>
-      <strong>Reducing the effect:</strong> We can preserve sharp corners by heavily pre-splitting the edges immediately surrounding the corner before applying subdivision. Because Butterfly (and Loop) relies on the localized positions of neighboring vertices, drastically increasing the vertex density near a corner limits how far the subdivision stencil can "pull" the geometry away from its original sharp state.
-    </p>
-
-    <h3 style="margin-top:1.5rem; margin-bottom:0.8rem; font-size:1.15rem;">The Asymmetric Cube</h3>
-
-    <p>
-      When you load <code>dae/cube.dae</code> and perform several iterations of subdivision, the cube becomes noticeably lopsided and asymmetric.
-    </p>
-    <p>
-      <strong>Why it occurs:</strong> A standard cube mesh is constructed using two triangles per face, meaning every square face is bisected by a single diagonal edge. This geometry is topologically asymmetrical. The subdivision stencil calculates positions based on edge connections; because the diagonal edge pulls the topological "weight" in one specific direction, the resulting subdivided surface bulges asymmetrically along those diagonals.
-    </p>
-    <p>
-      <strong>The Fix:</strong> To alleviate this, we can pre-process the cube by flipping/splitting the diagonal edge on every single face so that each square face contains four triangles meeting at a center vertex (forming an "X"). Once the base topology is perfectly symmetric across all axes, the subdivision algorithm applies its weights symmetrically, resulting in a perfectly smooth, evenly rounded cube!
-    </p>
 
     <h3 style="margin-top:1.5rem; margin-bottom:0.8rem; font-size:1.15rem;">Icosahedron Subdivision</h3>
 
@@ -436,7 +407,7 @@ VertexIter a = ca->vertex();</code></pre>
       </figure>
     </div>
 
-    <h3 style="margin-top:1.5rem; margin-bottom:0.8rem; font-size:1.15rem;">Cube with Half-Split Face</h3>
+    <h3 style="margin-top:1.5rem; margin-bottom:0.8rem; font-size:1.15rem;">Cube</h3>
 
     <div class="figures three">
       <figure>
@@ -467,6 +438,11 @@ VertexIter a = ca->vertex();</code></pre>
       </figure>
     </div>
 
+    <p>
+      After loop subdivision, sharp corners and edges tend to become rounded and smooth as they approximate a limit surface. We observed that this rounding effect can be reduced by pre-splitting edges near sharp features to increase local vertex density, which "anchors" the subdivision stencil. When subdividing <code>cube.dae</code>, the mesh becomes asymmetric because the original triangles are oriented in a way that pulls the weights unevenly along diagonals. Pre-processing the cube by splitting the diagonal edges on each face into a symmetrical "X" configuration ensures that the subdivision weights are applied evenly, resulting in a perfectly symmetrical sphere-like object.
+    </p>
+
+
     <h3 style="margin-top:1.5rem; margin-bottom:0.8rem; font-size:1.15rem;">Cube with Uniform Splits</h3>
 
     <div class="figures three">
@@ -494,7 +470,9 @@ VertexIter a = ca->vertex();</code></pre>
       </figure>
     </div>
 
-    <h3 style="margin-top:1.5rem; margin-bottom:0.8rem; font-size:1.15rem;">EC1: Sharp Corner Preservation</h3>
+    <h3 style="margin-top:1.5rem; margin-bottom:0.8rem; font-size:1.15rem;">EC1: Edge Splits on Boundaries</h3>
+
+    <p>To handle boundaries, we modified the vertex update rules: for a boundary vertex, the new position is computed using a 1D smoothing mask 3/4 * v + 1/8 * (b1 + b2), and new edge vertices are placed exactly at the midpoint 1/2 * (A + B).</p>
 
     <div class="figures four">
       <figure>
@@ -516,6 +494,10 @@ VertexIter a = ca->vertex();</code></pre>
     </div>
 
     <h3 style="margin-top:1.5rem; margin-bottom:0.8rem; font-size:1.15rem;">EC2: Butterfly Subdivision</h3>
+
+    <p>
+      For EC we implemented the  <b>Modified Butterfly subdivision scheme</b>. This is a interpolating scheme where original vertices remain at their initial positions. For new vertices, we implemented an 8-point stencil that reaches two rings out into the mesh, applying weights of 1/2 to endpoints, 1/8 to adjacent opposite vertices, and -1/16 to the four vertices in the secondary ring. This implementation successfully preserves the original vertex locations while generating a smooth, interpolated surface.
+    </p>
 
     <div class="figures three">
       <figure>
@@ -545,6 +527,12 @@ VertexIter a = ca->vertex();</code></pre>
         <figcaption>p6.5.5</figcaption>
       </figure>
     </div>
+
+    <h3 style="margin-top:1.5rem; margin-bottom:0.8rem; font-size:1.15rem;">Debugging Journey: Ordering</h3>
+
+    <p>
+      We encountered a bug where our upsampled mesh looked like a tangled ball of spikes. We realized we had accidentally placed the 8-point stencil calculation after the <code>splitEdge</code> loop. Because <code>splitEdge</code> alters the fundamental topology of the mesh, our <code>h->next()->twin()->next()</code> traversals were getting trapped inside the newly created subdivided triangles instead of reaching out to the next structural ring. Reordering the math to happen before the splits fixed the traversal instantly.
+    </p>
   </section>
 
 
