@@ -162,6 +162,7 @@
   <h1>Terra: A Procedural World Renderer</h1>
   <p>CS 184: Final Project Proposal</p>
   <p>Sarvagya Somvanshi &middot; Mohan Xu &middot; Afreen Shameem &middot; Owen Ye</p>
+  <p>https://som1shi.github.io/cs184/final/</p>
 </header>
 
 <nav>
@@ -298,6 +299,27 @@
       </li>
     </ul>
 
+    <h3>Things we aim to solve</h3>
+
+    <ul>
+      <li>
+        Can all three systems — terrain erosion, FFT ocean, and atmospheric scattering — be
+        integrated into a single coherent scene without visual artifacts at their boundaries, and
+        do shared parameters like sun direction and heightmap produce consistent results across
+        all three simultaneously?
+      </li>
+      <li>
+        Is WebGPU compute sufficient to run hydraulic erosion, FFT ocean reconstruction, and
+        atmospheric precomputation at interactive framerates in a browser, or do we need to
+        make significant compromises on simulation resolution or quality?
+      </li>
+      <li>
+        Does our precomputed atmospheric scattering implementation produce sky colors and aerial
+        perspective that match Bruneton's published reference renders across different sun angles,
+        from midday to golden hour?
+      </li>
+    </ul>
+
     <h3>How we'll measure success</h3>
 
     <ul>
@@ -338,26 +360,20 @@
           <td><strong>Week 1</strong><br>Apr 8–14</td>
           <td>Scaffolding and individual prototypes</td>
           <td>
-            Everyone sets up the shared WebGPU TypeScript project with a basic render loop, camera,
-            and shared sun uniform. Each person gets their subsystem showing <em>something</em> by
-            end of week, even if rough.<br><br>
-            &bull; Person A: fBm heightmap rendering as a mesh<br>
-            &bull; Person B: flat FFT ocean with Phillips spectrum (no PBR yet)<br>
-            &bull; Person C: Bruneton precomputation pass running; sky visible in background<br>
-            &bull; Person D: camera rig, time-of-day uniform, integration scaffolding
+            &bull; fBm heightmap rendering as a mesh<br>
+            &bull; Flat FFT ocean with Phillips spectrum (no PBR yet)<br>
+            &bull; Bruneton precomputation pass running; sky visible in background<br>
+            &bull; Camera rig, time-of-day uniform, integration scaffolding
           </td>
         </tr>
         <tr>
           <td><strong>Week 2</strong><br>Apr 15–21</td>
           <td>Core implementation</td>
           <td>
-            &bull; Person A: full Mei et al. erosion simulation (water flow, sediment transport,
-            deposition); terrain showing eroded valleys<br>
-            &bull; Person B: FFT ocean with correct normals, basic Fresnel water material, tiling
-            working<br>
-            &bull; Person C: aerial perspective applied to terrain; sky color matching sun position<br>
-            &bull; Person D: terrain heightmap feeding ocean waterline clip; sun direction shared
-            across all three shaders
+            &bull; Full Mei et al. erosion simulation (water flow, sediment transport, deposition); terrain showing eroded valleys<br>
+            &bull; FFT ocean with correct normals, basic Fresnel water material, tiling working<br>
+            &bull; Aerial perspective applied to terrain; sky color matching sun position<br>
+            &bull; Terrain heightmap feeding ocean waterline clip; sun direction shared across all three shaders
           </td>
         </tr>
         <tr>
@@ -400,7 +416,7 @@
         DOI: 10.1109/PG.2007.15.
       </li>
       <li>
-        Tessendorf, J. (2001). <em>Simulating Ocean Water.</em> SIGGRAPH Course Notes.
+        Tessendorf, J. (2004). <em>Simulating Ocean Water.</em> SIGGRAPH Course Notes.
       </li>
       <li>
         Bruneton, E., Neyret, F. (2008). <em>Precomputed Atmospheric Scattering.</em> Computer
