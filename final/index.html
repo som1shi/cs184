@@ -221,9 +221,10 @@
     </p>
 
     <p>
-      All three subsystems will be implemented as WebGPU compute and render passes in TypeScript and
-      WGSL, targeting Chrome on Apple Silicon Macs. Everything runs client-side with no server or
-      cloud compute required.
+      The ocean mesh is clipped at the heightmap's sea-level contour so water and land don't
+      intersect. All three subsystems will be implemented as WebGPU compute and render passes in
+      TypeScript and WGSL, targeting Chrome on Apple Silicon Macs. Everything runs client-side with
+      no server or cloud compute required.
     </p>
   </section>
 
@@ -241,7 +242,9 @@
       <li>
         <strong>Eroded terrain:</strong> A procedurally generated island heightmap built from
         fractional Brownian motion noise, then eroded using a GPU implementation of the Mei et al.
-        (2007) shallow-water pipe model. The simulation tracks terrain height, water height,
+        (2007) shallow-water pipe model. The simulation runs on a 512&times;512 grid — fine enough
+        for visible river valleys and ridges while staying fast enough for real-time — and applies
+        300–500 erosion passes at startup. The simulation tracks terrain height, water height,
         suspended sediment, outflow flux in four directions, and velocity at every grid cell — all
         stored as GPU textures updated in parallel compute passes. The result should show realistic
         river valleys, ridges, and sediment deposits that you wouldn't get from unprocessed noise.
@@ -250,8 +253,9 @@
         <strong>FFT ocean:</strong> A real-time ocean surrounding the island, using Tessendorf's
         approach where the surface height is decomposed into wave components with amplitudes drawn
         from the Phillips spectrum and then reconstructed via inverse FFT every frame — the same
-        technique used in Sea of Thieves and Assassin's Creed IV. The water material will use Fresnel
-        reflectance and depth-based color extinction.
+        technique used in Sea of Thieves and Assassin's Creed IV. The simulation uses a 256&times;256
+        FFT grid with a wind speed of 12 m/s at a fixed 45° direction. The water material will use
+        Fresnel reflectance and depth-based color extinction.
       </li>
       <li>
         <strong>Precomputed atmospheric scattering:</strong> A physically accurate sky using Bruneton
