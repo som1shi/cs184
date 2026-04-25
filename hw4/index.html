@@ -582,7 +582,7 @@
     The gust magnitude is computed as: <code>gust = 1.0 + 0.5 * sin(0.5 * x + 1.0 * t) + 0.3 * cos(0.5 * y + 0.8 * t)</code>
   </p>
   <p>
-    The constant 1.0 baseline ensures the wind always blows in the same direction (rather than oscillating back and forth), while the sin and cos terms add gusts that vary across the cloth's surface and over time. This means different regions of the cloth feel different amounts of wind at the same instant, which produces the rippling and billowing characteristic of real wind. The final force is <code>Vector3D(0.5, 0, 1.0) * wind_strength * gust</code>, blowing diagonally in the xz-plane.
+    The constant 1.0 baseline ensures the wind always blows in the same direction (rather than oscillating back and forth), while the sin and cos terms add gusts that vary across the cloth's surface and over time. This means different regions of the cloth feel different amounts of wind at the same instant, which produces the billowing characteristic of real wind. The final force is <code>Vector3D(0.5, 0, 1.0) * wind_strength * gust</code>, blowing diagonally in the xz-plane.
   </p>
   <p>
     Without wind, the cloth settles into a static drape. With wind, the cloth is pushed sideways and ripples continuously, never fully coming to rest.
@@ -594,11 +594,11 @@
     </figure>
     <figure>
       <img src="images/ec_wind_1.png" alt="Gust after 1 second">
-      <figcaption>Wind enabled — cloth pushed sideways</figcaption>
+      <figcaption>Wind enabled — cloth pushed sideways (t = 1 s)</figcaption>
     </figure>
     <figure>
       <img src="images/ec_wind_2.png" alt="Wind enabled 2">
-      <figcaption>Wind enabled — rippling across surface</figcaption>
+      <figcaption>Wind enabled — cloth lifted horizontally (t = 2 s)</figcaption>
     </figure>
   </div>
 
@@ -612,17 +612,17 @@
   <div class="figures two">
     <figure>
       <img src="images/tearing_contact.png" alt="Cloth contact with sphere">
-      <figcaption>Cloth lands on sphere intact</figcaption>
+      <figcaption>Cloth lands on the sphere intact</figcaption>
     </figure>
     <figure>
       <img src="images/tearing_stretch.png" alt="Cloth stretching">
-      <figcaption>Springs stretching at curvature points</figcaption>
+      <figcaption>Springs stretch at curvature points</figcaption>
     </figure>
   </div>
   <div class="figures two">
     <figure>
       <img src="images/tearing_rip.png" alt="Cloth ripping">
-      <figcaption>Springs break, holes form</figcaption>
+      <figcaption>Springs at the highest-tension points snap</figcaption>
     </figure>
     <figure>
       <img src="images/tearing_fall.png" alt="Cloth falling">
