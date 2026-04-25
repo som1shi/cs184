@@ -226,6 +226,22 @@
       We model the cloth as a grid of point masses connected by three types of springs. <strong>Structural</strong> springs connect each mass to its immediate horizontal and vertical neighbors, resisting stretching and compression along the grid axes. <strong>Shearing</strong> springs connect diagonal neighbors to resist in-plane shear deformation. <strong>Bending</strong> springs connect every other neighbor horizontally and vertically to provide out-of-plane bending resistance, giving the cloth a stiffness that prevents it from folding too sharply.
     </p>
 
+    <p>The screenshots below show the structure of <code>scene/pinned2.json</code> with all spring constraints enabled, viewed from different angles.</p>
+    <div class="figures three">
+      <figure>
+        <img src="images/part1_topdown.png" alt="Top-down view">
+        <figcaption>Top-down view of the cloth</figcaption>
+      </figure>
+      <figure>
+        <img src="images/part1_topdown_zoom.png" alt="Zoomed top-down view">
+        <figcaption>Zoomed in — point masses and spring connectivity</figcaption>
+      </figure>
+      <figure>
+        <img src="images/part1_angled.png" alt="Angled perspective view">
+        <figcaption>Angled perspective</figcaption>
+      </figure>
+    </div>
+
     <p>The wireframes below show <code>scene/pinned2.json</code> under different spring constraint configurations.</p>
 
     <div class="figures three">
