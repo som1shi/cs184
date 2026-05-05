@@ -203,6 +203,7 @@
   <a href="#part3">Part 3</a>
   <a href="#part4">Part 4</a>
   <a href="#part5">Part 5</a>
+  <a href="#extra-credit">Extra Credit</a>
 </nav>
 
 <main>
@@ -224,6 +225,22 @@
     <p>
       We model the cloth as a grid of point masses connected by three types of springs. <strong>Structural</strong> springs connect each mass to its immediate horizontal and vertical neighbors, resisting stretching and compression along the grid axes. <strong>Shearing</strong> springs connect diagonal neighbors to resist in-plane shear deformation. <strong>Bending</strong> springs connect every other neighbor horizontally and vertically to provide out-of-plane bending resistance, giving the cloth a stiffness that prevents it from folding too sharply.
     </p>
+
+    <p>The screenshots below show the structure of <code>scene/pinned2.json</code> with all spring constraints enabled, viewed from different angles.</p>
+    <div class="figures three">
+      <figure>
+        <img src="images/part1_topdown.png" alt="Top-down view">
+        <figcaption>Top-down view of the cloth</figcaption>
+      </figure>
+      <figure>
+        <img src="images/part1_topdown_zoom.png" alt="Zoomed top-down view">
+        <figcaption>Zoomed in — point masses and spring connectivity</figcaption>
+      </figure>
+      <figure>
+        <img src="images/part1_angled.png" alt="Angled perspective view">
+        <figcaption>Angled perspective</figcaption>
+      </figure>
+    </div>
 
     <p>The wireframes below show <code>scene/pinned2.json</code> under different spring constraint configurations.</p>
 
@@ -569,6 +586,66 @@
       </figure>
     </div>
   </section>
+
+<section id="extra-credit">
+  <h2>Extra Credit</h2>
+
+  <h3>Wind</h3>
+  <p>
+    We added a spatially varying wind force to the simulation. In <code>simulate()</code>, after gravity is applied but before spring forces are computed, we add a wind force to each point mass based on its position and a static time variable that increments by <code>delta_t</code> each step.
+  </p>
+  <p>
+    The gust magnitude is computed as: <code>gust = 1.0 + 0.5 * sin(0.5 * x + 1.0 * t) + 0.3 * cos(0.5 * y + 0.8 * t)</code>
+  </p>
+  <p>
+    The constant 1.0 baseline ensures the wind always blows in the same direction (rather than oscillating back and forth), while the sin and cos terms add gusts that vary across the cloth's surface and over time. This means different regions of the cloth feel different amounts of wind at the same instant, which produces the billowing characteristic of real wind. The final force is <code>Vector3D(0.5, 0, 1.0) * wind_strength * gust</code>, blowing diagonally in the xz-plane.
+  </p>
+  <p>
+    Without wind, the cloth settles into a static drape. With wind, the cloth is pushed sideways and ripples continuously, never fully coming to rest.
+  </p>
+  <div class="figures three">
+    <figure>
+      <img src="images/part2_default_hang.png" alt="No wind">
+      <figcaption>No wind — static drape</figcaption>
+    </figure>
+    <figure>
+      <img src="images/ec_wind_1.png" alt="Gust after 1 second">
+      <figcaption>Wind enabled — cloth pushed sideways (t = 1 s)</figcaption>
+    </figure>
+    <figure>
+      <img src="images/ec_wind_2.png" alt="Wind enabled 2">
+      <figcaption>Wind enabled — cloth lifted horizontally (t = 2 s)</figcaption>
+    </figure>
+  </div>
+
+  <h3>Cloth Tearing</h3>
+  <p>
+    We added the ability for the cloth to tear apart when its springs are stretched too far. In <code>simulate()</code>, at the end of each timestep, we remove any spring whose current length exceeds 2.5× its rest length. Once a spring is gone, the two point masses it connected are no longer held together. If enough springs break in the same region, the cloth physically separates into pieces.
+  </p>
+  <p>
+    To showcase this we ran <code>scene/sphere.json</code> with the Provot constraint temporarily disabled, letting springs stretch freely under contact forces until they reached the breaking threshold. The cloth first lands on the sphere and drapes over it intact, with visible tension building in the springs wrapping around the curvature. The highest-stretch points, where the cloth curves most sharply over the sphere, are the first to reach the threshold. Once those springs break, holes open up in the cloth, and the torn pieces fall away from the sphere. The result is a simple, realistic tearing effect.
+  </p>
+  <div class="figures two">
+    <figure>
+      <img src="images/tearing_contact.png" alt="Cloth contact with sphere">
+      <figcaption>Cloth lands on the sphere, intact</figcaption>
+    </figure>
+    <figure>
+      <img src="images/tearing_stretch.png" alt="Cloth stretching">
+      <figcaption>Springs stretch at curvature points</figcaption>
+    </figure>
+  </div>
+  <div class="figures two">
+    <figure>
+      <img src="images/tearing_rip.png" alt="Cloth ripping">
+      <figcaption>Springs at the highest-stretch points snap</figcaption>
+    </figure>
+    <figure>
+      <img src="images/tearing_fall.png" alt="Cloth falling">
+      <figcaption>Torn pieces fall away</figcaption>
+    </figure>
+  </div>
+</section>
 
 </main>
 
