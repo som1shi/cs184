@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS 184 Final &mdash; Terra Proposal</title>
+  <link rel="stylesheet" href="final-common.css">
+</head>
+<body>
+
+<header>
+  <h1>Terra: A Procedural World Renderer</h1>
+  <p>CS 184: Final Project Proposal</p>
+  <p>Sarvagya Somvanshi &middot; Mohan Xu &middot; Afreen Shameem &middot; Owen Ye</p>
+  <p><a href="https://som1shi.github.io/cs184/final/proposal.html">https://som1shi.github.io/cs184/final/proposal.html</a></p>
+</header>
+
+<nav aria-label="Proposal navigation">
+  <a class="nav-back" href="index.html">&larr; final</a>
+  <a href="#summary">Summary</a>
+  <span class="nav-sep" aria-hidden="true">&middot;</span>
+  <a href="#problem">Problem</a>
+  <span class="nav-sep" aria-hidden="true">&middot;</span>
+  <a href="#goals">Goals</a>
+  <span class="nav-sep" aria-hidden="true">&middot;</span>
+  <a href="#schedule">Schedule</a>
+  <span class="nav-sep" aria-hidden="true">&middot;</span>
+  <a href="#resources">Resources</a>
+</nav>
+
+<main>
+
+  <section id="summary">
+    <h2>Title, Summary, and Team Members</h2>
+
+    <p>
+      <strong>Terra: A Procedural World Renderer</strong>
+    </p>
+
+    <p>
+      Terra is a real-time, browser-based renderer that integrates three physically-based systems:
+      procedural terrain shaped by GPU-accelerated hydraulic erosion, an FFT ocean simulation using
+      the Tessendorf wave model, and precomputed atmospheric scattering following Bruneton &amp; Neyret
+      (2008). All three share a sun direction and heightmap, so a time-of-day slider produces
+      consistent changes across the sky, water, and terrain in the same scene. The demo runs entirely
+      in WebGPU inside Chrome with no installation required.
+    </p>
+
+    <p><strong>Team members:</strong> Sarvagya Somvanshi, Mohan Xu, Afreen Shameem, Owen Ye</p>
+  </section>
+
+  <section id="problem">
+    <h2>Problem Description</h2>
+
+    <p>
+      Rendering a convincing outdoor scene requires three physically distinct systems — terrain,
+      water, and atmosphere — to share consistent physical parameters. Each system individually is a
+      solved problem with published papers and reference implementations. The actual challenge is
+      coupling them: the terrain heightmap defines the ocean waterline, the sun direction drives both
+      wave reflections and sky color, and aerial perspective requires the atmosphere to operate on
+      the terrain geometry. Getting these interactions correct in a single real-time WebGPU renderer
+      is the core goal of this project.
+    </p>
+
+    <p>
+      Each subsystem has a specific technical bottleneck. Hydraulic erosion requires updating water
+      flow, sediment transport, and deposition across every heightmap cell every timestep — a
+      data-parallel problem that maps directly to GPU compute shaders but is impractical on the CPU.
+      Ocean rendering requires summing thousands of wave components per frame; the inverse Fast
+      Fourier Transform is the standard solution and the only approach that scales to real-time.
+      Accurate atmospheric scattering requires integrating multiple Rayleigh and Mie scattering
+      events along every view ray, which is solved by precomputing the scattering integrals into
+      4D lookup textures at startup and sampling them in constant time during rendering.
+    </p>
+
+    <p>
+      The ocean mesh is clipped at the heightmap's sea-level contour so water and land don't
+      intersect. All three subsystems will be implemented as WebGPU compute and render passes in
+      TypeScript and WGSL, targeting Chrome on Apple Silicon Macs. Everything runs client-side with
+      no server or cloud compute required.
+    </p>
+  </section>
+
+  <section id="goals">
+    <h2>Goals and Deliverables</h2>
+
+    <h3>What we plan to deliver (baseline)</h3>
+
+    <p>
+      These are the things we need to get right to consider the project a success:
+    </p>
+
+    <ul>
+      <li>
+        <strong>Eroded terrain:</strong> A procedurally generated island heightmap built from
+        fractional Brownian motion noise, then eroded using a GPU implementation of the Mei et al.
+        (2007) shallow-water pipe model. The simulation runs on a 512&times;512 grid — fine enough
+        for visible river valleys and ridges while staying fast enough for real-time — and applies
+        300–500 erosion passes at startup. The simulation tracks terrain height, water height,
+        suspended sediment, outflow flux in four directions, and velocity at every grid cell — all
+        stored as GPU textures updated in parallel compute passes. The result should show realistic
+        river valleys, ridges, and sediment deposits that you wouldn't get from unprocessed noise.
+      </li>
+      <li>
+        <strong>FFT ocean:</strong> A real-time ocean surrounding the island, using Tessendorf's
+        approach where the surface height is decomposed into wave components with amplitudes drawn
+        from the Phillips spectrum and then reconstructed via inverse FFT every frame — the same
+        technique used in Sea of Thieves and Assassin's Creed IV. The simulation uses a 256&times;256
+        FFT grid with a wind speed of 12 m/s at a fixed 45° direction. The water material will use
+        Fresnel reflectance and depth-based color extinction.
+      </li>
+      <li>
+        <strong>Precomputed atmospheric scattering:</strong> A physically accurate sky using Bruneton
+        &amp; Neyret (2008). The scattering data is precomputed for all viewpoints, view directions,
+        and sun directions at startup, then looked up in constant time at runtime. This gives correct
+        blue sky during the day, golden-hour colors at sunset, and aerial perspective that hazes out
+        distant terrain.
+      </li>
+      <li>
+        <strong>Time-of-day slider:</strong> A UI control that moves the sun from sunrise through
+        sunset, with sky color, water reflections, and terrain shadows all responding to the same
+        shared sun direction uniform.
+      </li>
+      <li>
+        <strong>Flythrough camera:</strong> Basic mouse/keyboard controls to navigate around the
+        scene.
+      </li>
+      <li>
+        <strong>Browser demo:</strong> Everything delivered as a single browser tab (Chrome +
+        WebGPU), shareable via URL with no install.
+      </li>
+    </ul>
+
+    <h3>What we hope to deliver (aspirational)</h3>
+
+    <p>
+      If we get ahead of schedule, we'd like to add:
+    </p>
+
+    <ul>
+      <li>
+        <strong>Interactive rainfall:</strong> Clicking on the terrain places a water source that
+        runs the erosion simulation live, visibly carving new channels in real time.
+      </li>
+      <li>
+        <strong>Foam and whitecaps:</strong> Driven by the Jacobian of the wave displacement field
+        as described in Tessendorf's paper, so waves crest and foam where they're steepest.
+      </li>
+      <li>
+        <strong>Slope-based terrain texturing:</strong> Rock on steep faces, grass on shallower
+        slopes, sand at the waterline, using the erosion flow map to inform material type.
+      </li>
+      <li>
+        <strong>Day/night cycle:</strong> Extending past sunset to a starfield sky.
+      </li>
+    </ul>
+
+    <h3>Things we aim to solve</h3>
+
+    <ul>
+      <li>
+        Can all three systems — terrain erosion, FFT ocean, and atmospheric scattering — be
+        integrated into a single coherent scene without visual artifacts at their boundaries, and
+        do shared parameters like sun direction and heightmap produce consistent results across
+        all three simultaneously?
+      </li>
+      <li>
+        Is WebGPU compute sufficient to run hydraulic erosion, FFT ocean reconstruction, and
+        atmospheric precomputation at interactive framerates in a browser, or do we need to
+        make significant compromises on simulation resolution or quality?
+      </li>
+      <li>
+        Does our precomputed atmospheric scattering implementation produce sky colors and aerial
+        perspective that match Bruneton's published reference renders across different sun angles,
+        from midday to golden hour?
+      </li>
+    </ul>
+
+    <h3>How we'll measure success</h3>
+
+    <ul>
+      <li>
+        <strong>Erosion:</strong> Side-by-side comparison of the heightmap before and after erosion,
+        checking that river valleys, ridges, and sediment deposits look geologically plausible.
+      </li>
+      <li>
+        <strong>Ocean:</strong> Visual comparison against reference FFT ocean renders; wave
+        choppiness and Phillips spectrum parameters tuned to match Beaufort scale descriptions.
+      </li>
+      <li>
+        <strong>Atmosphere:</strong> Comparison of sky gradient and aerial perspective against
+        Bruneton's own published validation renders.
+      </li>
+      <li>
+        <strong>Performance:</strong> The full integrated scene should run at ≥30fps at 1080p on an
+        M-series MacBook. We'll profile each subsystem individually using the WebGPU timestamp query
+        API to find any bottlenecks.
+      </li>
+    </ul>
+  </section>
+
+  <section id="schedule">
+    <h2>Schedule</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Week</th>
+          <th>Focus</th>
+          <th>Tasks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Week 1</strong><br>Apr 8–14</td>
+          <td>Scaffolding and individual prototypes</td>
+          <td>
+            &bull; fBm heightmap rendering as a mesh<br>
+            &bull; Flat FFT ocean with Phillips spectrum (no PBR yet)<br>
+            &bull; Bruneton precomputation pass running; sky visible in background<br>
+            &bull; Camera rig, time-of-day uniform, integration scaffolding
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Week 2</strong><br>Apr 15–21</td>
+          <td>Core implementation</td>
+          <td>
+            &bull; Full Mei et al. erosion simulation (water flow, sediment transport, deposition); terrain showing eroded valleys<br>
+            &bull; FFT ocean with correct normals, basic Fresnel water material, tiling working<br>
+            &bull; Aerial perspective applied to terrain; sky color matching sun position<br>
+            &bull; Terrain heightmap feeding ocean waterline clip; sun direction shared across all three shaders
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Week 3</strong><br>Apr 22–28</td>
+          <td>Integration and visual quality</td>
+          <td>
+            All four systems rendering in the same scene. Focus on integration correctness and visual
+            polish.<br><br>
+            &bull; Water reflections sampling the Bruneton sky<br>
+            &bull; Terrain normals feeding aerial perspective<br>
+            &bull; Slope-based texture blending (grass/rock/sand)<br>
+            &bull; Time-of-day slider working end-to-end<br>
+            &bull; <strong>Milestone deliverable:</strong> full scene video
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Week 4</strong><br>Apr 29–May 4</td>
+          <td>Polish, stretch goals, presentation</td>
+          <td>
+            &bull; Performance profiling and any necessary optimizations<br>
+            &bull; Stretch goals if ahead of schedule (foam, interactive erosion)<br>
+            &bull; Final writeup and demo video<br>
+            &bull; Presentation prep
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="resources">
+    <h2>Resources</h2>
+
+    <h3>Papers</h3>
+
+    <ul>
+      <li>
+        Mei, X., Decaudin, P., Hu, B.-G. (2007). <em>Fast Hydraulic Erosion Simulation and
+        Visualization on GPU.</em> 15th Pacific Conference on Computer Graphics and Applications.
+        DOI: 10.1109/PG.2007.15.
+      </li>
+      <li>
+        Tessendorf, J. (2004). <em>Simulating Ocean Water.</em> SIGGRAPH Course Notes.
+      </li>
+      <li>
+        Bruneton, E., Neyret, F. (2008). <em>Precomputed Atmospheric Scattering.</em> Computer
+        Graphics Forum 27(4). DOI: 10.1111/j.1467-8659.2008.01245.x.
+      </li>
+    </ul>
+
+    <h3>Reference implementations (open source)</h3>
+
+    <ul>
+      <li>
+        <strong>WebGPU terrain erosion:</strong> GPU-Gang/WebGPU-Erosion-Simulation — TypeScript/WGSL,
+        implements the Mei et al. pipe model
+      </li>
+      <li>
+        <strong>WebGPU FFT ocean:</strong> Popov72/OceanDemo — BabylonJS + WebGPU, Tessendorf model
+      </li>
+      <li>
+        <strong>Bruneton WebGL2 demo:</strong> ebruneton/precomputed_atmospheric_scattering — the
+        original author's WebGL2 port (we'll need to translate GLSL to WGSL)
+      </li>
+      <li>
+        <strong>Bruneton WebGPU/WGSL port:</strong> TerrainView7 — independent WGSL implementation
+        with compute shader precomputation
+      </li>
+    </ul>
+
+    <h3>Platform and tooling</h3>
+
+    <ul>
+      <li><strong>Language:</strong> TypeScript</li>
+      <li><strong>Graphics API:</strong> WebGPU (Chrome 113+ on macOS via Metal backend)</li>
+      <li><strong>Shader language:</strong> WGSL</li>
+      <li><strong>Build tooling:</strong> Vite or Next.js</li>
+      <li>
+        <strong>Hardware:</strong> Apple Silicon MacBooks (M1/M2/M3) — all team members have these,
+        and all simulation runs client-side in the browser with no cloud compute required
+      </li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  CS 184: Computer Graphics and Imaging &mdash; Spring 2026
+</footer>
+
+</body>
+</html>

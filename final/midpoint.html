@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS 184 Final Project &mdash; Terra: A Procedural World Renderer</title>
+  <link rel="stylesheet" href="final-common.css">
+  <link rel="stylesheet" href="midpoint.css">
+</head>
+<body class="midpoint-page">
+
+<header>
+  <h1>Terra: A Procedural World Renderer</h1>
+  <p>CS 184: Final Project &mdash; Milestone Report</p>
+  <p>Sarvagya Somvanshi &middot; Mohan Xu &middot; Afreen Shameem &middot; Owen Ye</p>
+  <p><a href="https://som1shi.github.io/cs184/final/midpoint.html">https://som1shi.github.io/cs184/final/midpoint.html</a></p>
+</header>
+
+<nav aria-label="Midpoint navigation">
+  <a class="nav-back" href="index.html">&larr; final</a>
+  <a href="#deliverables">Deliverables</a>
+  <a href="#summary">Progress Summary</a>
+  <a href="#Preliminary_results">Preliminary Results</a>
+  <a href="#status">Status</a>
+  <a href="#schedule">Schedule</a>
+</nav>
+
+<main>
+
+  <section id="deliverables">
+    <b>Deliverables</b>
+
+    <ul>
+      <li><strong>Milestone Video:</strong> <a class="resource-link" href="https://www.youtube.com/watch?v=j9I2GQvo_W0&amp;feature=youtu.be" target="_blank" rel="noopener noreferrer">YouTube</a></li>
+      <li><strong>Presentation Slides:</strong> <a class="resource-link" href="https://docs.google.com/presentation/d/1WHMv_cMEymZL_jN8q2AU0tCmSxwUfGsNz5Sqc11t9eE/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Slides</a></li>
+      <li><strong>Milestone Report:</strong> <a class="resource-link" href="https://cal-cs184-student.github.io/hw-webpages-owen2608/final_milestone/index.html" target="_blank" rel="noopener noreferrer">Milestone Webpage</a></li>
+    </ul>
+  </section>
+
+  <section id="summary">
+    <b>Progress Summary</b>
+
+    <p>
+      Terra is a fully browser-based 3D procedural world engine built on WebGPU with zero runtime
+      dependencies. Over the past two weeks we implemented three core subsystems: a procedural
+      terrain with GPU-driven hydraulic erosion and vegetation, an FFT ocean simulation with Fresnel
+      reflections, and atmospheric scattering based on Bruneton's atmospheric scattering. All three render together in
+      a unified scene.
+    </p>
+  </section>
+
+  <section id="Preliminary_results">
+    <b>Preliminary Results</b>
+  </section>
+
+  <section id="terrain">
+    <h3>Terrain</h3>
+
+    <p>
+      A 512&times;512 heightmap is generated on the CPU using 7-octave fBm Perlin noise (lacunarity
+      2.0, persistence 0.40) with domain warping to break grid alignment, then shaped by a radial
+      island falloff and Gaussian blur.
+      The heightmap is then run through a GPU erosion pipeline consisting
+      of 12 compute shader entry points orchestrated across 300 outer iterations with thousands of
+      dispatches. Erosion follows the Stream Power Equation.
+
+      The terrain fragment shader blends five biomes via triplanar
+      texturing driven by altitude and slope, with noise-perturbed thresholds for organic transitions.
+      Lighting uses a three-light rig ray-marched soft shadows. Rivers are rendered
+      by sampling flow accumulation data with Phong specular highlights.
+    </p>
+  </section>
+
+  <section id="ocean">
+    <h3>Ocean</h3>
+
+    <p>
+      The ocean uses Tessendorf-style FFT wave synthesis driven by the Phillips spectrum:
+
+      The spectrum is initialized via Box-Muller Gaussian sampling with conjugate symmetry for
+      real-valued output.
+
+      An in-place radix-2 Cooley-Tukey FFT on a 128&times;128 grid reconstructs the height field as
+      a separable 2D IFFT, running on the CPU with per-frame texture
+      upload. The ocean renders as a 256&times;256 mesh with Schlick Fresnel reflections.
+    </p>
+  </section>
+
+  <section id="atmosphere">
+    <h3>Atmosphere &amp; Sky</h3>
+
+    <p>
+      The sky renders as a full-screen quad behind all geometry with a time-of-day system driving
+      morning, evening, and night transitions with sunset/sunrise coloring and seed-based hue
+      variation. Procedural clouds use 3-octave value noise with time-of-day drift while a sun disk and
+      moon complete the sky dome. Precomputed transmittance, scattering, and irradiance textures have been generated via compute shader using Bruneton's atmospheric parameters.
+    </p>
+  </section>
+
+  <section id="status">
+    <b>Current Status</b>
+
+    <p>
+      We are on track with our original timeline. All primary rendering features targeted for
+      Milestone 1 are implemented and functional. The main area we need to touch up is atmosphere integration
+      as we need to finish connecting the precomputed sky data to the final rendering for the most accurate lighting and color.
+      In addition, we are working to port ocean FFT to GPU instead of CPU. Outside of that, we'll do work on some of our stretch (Aspirational!) goals.
+    </p>
+  </section>
+
+  <section id="schedule">
+    <b>Updated Schedule</b>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Week</th>
+          <th>Focus</th>
+          <th>Tasks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Week 3</strong><br>Apr 21&ndash;27</td>
+          <td>Integration</td>
+          <td>
+            &bull; Finish integrating precomputed Bruneton LUTs into final rendering for accurate lighting and color<br>
+            &bull; Port ocean FFT from CPU to GPU compute shaders
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Week 4</strong><br>Apr 28&ndash;May 4</td>
+          <td>Polish &amp; Stretch Goals</td>
+          <td>
+            &bull; Volumetric clouds with bloom effects<br>
+            &bull; Foam and whitecaps (stretch)<br>
+            &bull; Final presentation / report
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer>
+  CS 184: Computer Graphics and Imaging &mdash; Spring 2026
+</footer>
+
+</body>
+</html>

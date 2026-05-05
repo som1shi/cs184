@@ -1,0 +1,196 @@
+/* Final report main page — extends final-common.css */
+body.final-main {
+  font-size: 13.5px;
+}
+
+body.final-main .nav-stack {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+body.final-main .nav-stack > nav {
+  border-bottom: none;
+}
+
+body.final-main .nav-stack > nav:first-child {
+  padding-bottom: 0.7rem;
+}
+
+@media print {
+  body.final-main {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  body.final-main main {
+    padding: 1rem 1.5rem 1rem;
+  }
+  body.final-main section {
+    margin-bottom: 0.6rem;
+  }
+  body.final-main th,
+  body.final-main td {
+    padding: 0.3rem 0.6rem;
+  }
+  body.final-main ul {
+    margin: 0.2rem 0 0.5rem 1.5rem;
+  }
+  body.final-main p {
+    margin-bottom: 0.5rem;
+  }
+}
+
+body.final-main .header-urls {
+  text-align: center;
+  line-height: 1.55;
+  margin: 0;
+  padding: 0 0.5rem;
+}
+
+body.final-main .header-url-sep {
+  color: #64748b;
+  user-select: none;
+  padding: 0 0.35rem;
+}
+
+body.final-main section {
+  margin-bottom: 1.4rem;
+}
+
+body.final-main section > b:first-child {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.3;
+}
+
+body.final-main section > b:first-child + p,
+body.final-main section > b:first-child + ul {
+  margin-top: 0.3rem;
+}
+
+body.final-main h3 {
+  font-weight: 700;
+  margin-top: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+body.final-main h2 {
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.45rem;
+  border-bottom-width: 1px;
+}
+
+body.final-main .video-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  margin: 1.5rem 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+body.final-main .video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+body.final-main .equation {
+  background: var(--code-bg);
+  border-left: 3px solid var(--accent);
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+  font-size: 0.92em;
+  overflow-x: auto;
+  border-radius: 0 4px 4px 0;
+}
+
+body.final-main a.resource-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+body.final-main a.resource-link:hover {
+  text-decoration: underline;
+}
+
+body.final-main #References ol {
+  font-size: 0.68rem;
+}
+
+body.final-main .results-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+  margin: 1rem 0;
+}
+
+body.final-main .gallery-item img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+  border: 1px solid var(--border);
+}
+
+body.final-main .gallery-item .caption {
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+  text-align: center;
+  line-height: 1.3;
+}
+
+@media (max-width: 560px) {
+  body.final-main .results-gallery {
+    grid-template-columns: 1fr;
+  }
+}
+
+body.final-main header {
+  padding: 1.5rem 1.5rem 1rem;
+}
+
+body.final-main .deliverable-tag {
+  opacity: 0.88;
+  font-weight: 500;
+}
+
+body.final-main .subsection-lede {
+  font-style: italic;
+  color: var(--muted);
+  margin: -0.35rem 0 0.75rem;
+  font-size: 0.95rem;
+}
+
+body.final-main .contributions-list {
+  list-style: none;
+  margin: 0.25rem 0 0;
+  padding: 0;
+}
+
+body.final-main .contributions-list li {
+  margin-bottom: 0.65rem;
+  padding-left: 0;
+  color: #334155;
+}
+
+body.final-main .video-caption {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-top: -0.25rem;
+  margin-bottom: 1rem;
+}

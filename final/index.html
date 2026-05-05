@@ -4,461 +4,293 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CS 184 Final Project &mdash; Terra: A Procedural World Renderer</title>
-  <style>
-    :root {
-      --bg: #fdfdfd;
-      --fg: #1a1a1a;
-      --accent: #2563eb;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --card-bg: #ffffff;
-      --code-bg: #f1f5f9;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--fg);
-      line-height: 1.7;
-      font-size: 17px;
-    }
-
-    header {
-      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      color: #f1f5f9;
-      padding: 3.5rem 1.5rem 3rem;
-      text-align: center;
-    }
-
-    header h1 {
-      font-size: 2.2rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.4rem;
-    }
-
-    header p {
-      color: #94a3b8;
-      font-size: 1.05rem;
-    }
-
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 0.7rem 1.5rem;
-      display: flex;
-      gap: 0.4rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    nav a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.88rem;
-      font-weight: 500;
-      padding: 0.35rem 0.9rem;
-      border-radius: 6px;
-      transition: all 0.15s;
-    }
-
-    nav a:hover {
-      color: var(--accent);
-      background: #eff6ff;
-    }
-
-    main {
-      max-width: 820px;
-      margin: 0 auto;
-      padding: 2.5rem 1.5rem 5rem;
-    }
-
-    section {
-      margin-bottom: 3.5rem;
-    }
-
-    h2 {
-      font-size: 1.55rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      padding-bottom: 0.45rem;
-      border-bottom: 2px solid var(--accent);
-      display: inline-block;
-    }
-
-    h3 {
-      font-size: 1.15rem;
-      font-weight: 600;
-      margin-top: 1.5rem;
-      margin-bottom: 0.8rem;
-    }
-
-    p {
-      margin-bottom: 1rem;
-      color: #334155;
-    }
-
-    ul, ol {
-      margin: 0.5rem 0 1rem 1.5rem;
-      color: #334155;
-    }
-
-    li {
-      margin-bottom: 0.4rem;
-    }
-
-    code {
-      background: var(--code-bg);
-      padding: 0.15em 0.4em;
-      border-radius: 4px;
-      font-size: 0.92em;
-      font-family: "SF Mono", "Fira Code", "Consolas", monospace;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 1rem 0;
-      font-size: 0.95rem;
-    }
-
-    th {
-      background: var(--code-bg);
-      padding: 0.6rem 0.9rem;
-      text-align: left;
-      border: 1px solid var(--border);
-      font-weight: 600;
-    }
-
-    td {
-      padding: 0.6rem 0.9rem;
-      border: 1px solid var(--border);
-      color: #334155;
-      vertical-align: top;
-    }
-
-    tr:nth-child(even) td {
-      background: #f8fafc;
-    }
-
-    footer {
-      text-align: center;
-      padding: 2rem 1rem;
-      color: var(--muted);
-      font-size: 0.85rem;
-      border-top: 1px solid var(--border);
-    }
-  </style>
+  <link rel="stylesheet" href="final-common.css">
+  <link rel="stylesheet" href="final-main.css">
 </head>
-<body>
+<body class="final-main">
 
 <header>
   <h1>Terra: A Procedural World Renderer</h1>
-  <p>CS 184: Final Project Proposal</p>
+  <p>CS 184: Final Project &mdash; Final Report <span class="deliverable-tag">webpage deliverable</span></p>
   <p>Sarvagya Somvanshi &middot; Mohan Xu &middot; Afreen Shameem &middot; Owen Ye</p>
-  <p>https://som1shi.github.io/cs184/final/</p>
+  <p class="header-urls">
+    <a href="https://som1shi.github.io/cs184/final/">https://som1shi.github.io/cs184/final/</a>
+    <span class="header-url-sep" aria-hidden="true">&middot;</span>
+    <a href="https://terrawebgpu.vercel.app" target="_blank" rel="noopener noreferrer">https://terrawebgpu.vercel.app</a>
+  </p>
 </header>
 
-<nav>
-  <a href="#summary">Summary</a>
-  <a href="#problem">Problem</a>
-  <a href="#goals">Goals</a>
-  <a href="#schedule">Schedule</a>
-  <a href="#resources">Resources</a>
+<div class="nav-stack">
+<nav aria-label="Final project hub">
+  <a class="nav-primary" href="#Abstract">Final</a>
+  <span class="nav-sep" aria-hidden="true">&middot;</span>
+  <a class="nav-primary" href="proposal.html">Proposal</a>
+  <span class="nav-sep" aria-hidden="true">&middot;</span>
+  <a class="nav-primary" href="midpoint.html">Midpoint</a>
+  <span class="nav-sep" aria-hidden="true">&middot;</span>
+  <a class="nav-primary" href="https://youtu.be/ZRDevUtEO8Y" target="_blank" rel="noopener noreferrer">Video</a>
+  <span class="nav-sep" aria-hidden="true">&middot;</span>
+  <a class="nav-primary" href="https://docs.google.com/presentation/d/1WHMv_cMEymZL_jN8q2AU0tCmSxwUfGsNz5Sqc11t9eE/edit?slide=id.g3dbd2bc8862_0_0#slide=id.g3dbd2bc8862_0_0" target="_blank" rel="noopener noreferrer" title="Presentation slides">Slides</a>
+  <span class="nav-sep" aria-hidden="true">&middot;</span>
+  <a class="nav-primary" href="https://terrawebgpu.vercel.app" target="_blank" rel="noopener noreferrer">Terra</a>
+  <span class="nav-sep" aria-hidden="true">&middot;</span>
+  <a class="nav-primary" href="https://github.com/som1shi/terra" target="_blank" rel="noopener noreferrer" title="GitHub repository">Github</a>
 </nav>
+</div>
 
 <main>
 
-  <!-- ============ SUMMARY ============ -->
-  <section id="summary">
-    <h2>Title, Summary, and Team Members</h2>
+  <section id="Abstract">
+    <b>Abstract</b>
 
     <p>
-      <strong>Terra: A Procedural World Renderer</strong>
-    </p>
-
-    <p>
-      Terra is a real-time, browser-based renderer that integrates three physically-based systems:
-      procedural terrain shaped by GPU-accelerated hydraulic erosion, an FFT ocean simulation using
-      the Tessendorf wave model, and precomputed atmospheric scattering following Bruneton &amp; Neyret
-      (2008). All three share a sun direction and heightmap, so a time-of-day slider produces
-      consistent changes across the sky, water, and terrain in the same scene. The demo runs entirely
-      in WebGPU inside Chrome with no installation required.
-    </p>
-
-    <p><strong>Team members:</strong> Sarvagya Somvanshi, Mohan Xu, Afreen Shameem, Owen Ye</p>
-  </section>
-
-  <!-- ============ PROBLEM ============ -->
-  <section id="problem">
-    <h2>Problem Description</h2>
-
-    <p>
-      Rendering a convincing outdoor scene requires three physically distinct systems — terrain,
-      water, and atmosphere — to share consistent physical parameters. Each system individually is a
-      solved problem with published papers and reference implementations. The actual challenge is
-      coupling them: the terrain heightmap defines the ocean waterline, the sun direction drives both
-      wave reflections and sky color, and aerial perspective requires the atmosphere to operate on
-      the terrain geometry. Getting these interactions correct in a single real-time WebGPU renderer
-      is the core goal of this project.
-    </p>
-
-    <p>
-      Each subsystem has a specific technical bottleneck. Hydraulic erosion requires updating water
-      flow, sediment transport, and deposition across every heightmap cell every timestep — a
-      data-parallel problem that maps directly to GPU compute shaders but is impractical on the CPU.
-      Ocean rendering requires summing thousands of wave components per frame; the inverse Fast
-      Fourier Transform is the standard solution and the only approach that scales to real-time.
-      Accurate atmospheric scattering requires integrating multiple Rayleigh and Mie scattering
-      events along every view ray, which is solved by precomputing the scattering integrals into
-      4D lookup textures at startup and sampling them in constant time during rendering.
-    </p>
-
-    <p>
-      The ocean mesh is clipped at the heightmap's sea-level contour so water and land don't
-      intersect. All three subsystems will be implemented as WebGPU compute and render passes in
-      TypeScript and WGSL, targeting Chrome on Apple Silicon Macs. Everything runs client-side with
-      no server or cloud compute required.
+      Terra is a real-time, procedurally generated Earth-like planetary renderer built entirely on WebGPU and WGSL, running in a browser with no server-side computation. The system synthesizes a complete natural environment on the GPU with continent-scale terrain shaped by simulated hydraulic erosion, an FFT-driven ocean with a physically derived wave spectrum, volumetric clouds lit by single-scattering, a physically-based atmosphere computed from precomputed transmittance lookup tables, instanced animated vegetation, and a night sky complete with procedurally placed stars, a galactic band, and a moon with limb darkening. A controllable dynamic day-night cycle unifies all these subsystems under a single moving sun/moon direction, and HDR bloom with ACES tone mapping delivers a cinematic final image.
     </p>
   </section>
 
-  <!-- ============ GOALS ============ -->
-  <section id="goals">
-    <h2>Goals and Deliverables</h2>
-
-    <h3>What we plan to deliver (baseline)</h3>
+  <section id="technical_approach">
+    <b>Technical approach</b>
 
     <p>
-      These are the things we need to get right to consider the project a success:
+      Terra is a fully browser-based 3D procedural world engine built on WebGPU with zero runtime
+      dependencies. The pipeline is divided into an initialization phase (terrain generation, erosion,
+      normal/AO computation, atmosphere LUT precomputation, vegetation placement) and a real-time render
+      loop (ocean FFT, atmosphere, terrain, vegetation, ocean, bloom). All heavy computation runs as
+      GPU compute shaders in WGSL.
     </p>
+    <p>
+      The subsections below expand this into a concrete implementation summary: terrain synthesis and erosion,
+      ocean FFT waves, atmosphere and sky (including clouds and flocking birds), then HDR post-processing.
+      Where we deviated from published methods for load time or frame rate, we call that out as a
+      <strong>Reference variation note</strong>. Citations point to the <a href="#References">References</a> list at the end of the report.
+    </p>
+  </section>
 
-    <ul>
-      <li>
-        <strong>Eroded terrain:</strong> A procedurally generated island heightmap built from
-        fractional Brownian motion noise, then eroded using a GPU implementation of the Mei et al.
-        (2007) shallow-water pipe model. The simulation runs on a 512&times;512 grid — fine enough
-        for visible river valleys and ridges while staying fast enough for real-time — and applies
-        300–500 erosion passes at startup. The simulation tracks terrain height, water height,
-        suspended sediment, outflow flux in four directions, and velocity at every grid cell — all
-        stored as GPU textures updated in parallel compute passes. The result should show realistic
-        river valleys, ridges, and sediment deposits that you wouldn't get from unprocessed noise.
-      </li>
-      <li>
-        <strong>FFT ocean:</strong> A real-time ocean surrounding the island, using Tessendorf's
-        approach where the surface height is decomposed into wave components with amplitudes drawn
-        from the Phillips spectrum and then reconstructed via inverse FFT every frame — the same
-        technique used in Sea of Thieves and Assassin's Creed IV. The simulation uses a 256&times;256
-        FFT grid with a wind speed of 12 m/s at a fixed 45° direction. The water material will use
-        Fresnel reflectance and depth-based color extinction.
-      </li>
-      <li>
-        <strong>Precomputed atmospheric scattering:</strong> A physically accurate sky using Bruneton
-        &amp; Neyret (2008). The scattering data is precomputed for all viewpoints, view directions,
-        and sun directions at startup, then looked up in constant time at runtime. This gives correct
-        blue sky during the day, golden-hour colors at sunset, and aerial perspective that hazes out
-        distant terrain.
-      </li>
-      <li>
-        <strong>Time-of-day slider:</strong> A UI control that moves the sun from sunrise through
-        sunset, with sky color, water reflections, and terrain shadows all responding to the same
-        shared sun direction uniform.
-      </li>
-      <li>
-        <strong>Flythrough camera:</strong> Basic mouse/keyboard controls to navigate around the
-        scene.
-      </li>
-      <li>
-        <strong>Browser demo:</strong> Everything delivered as a single browser tab (Chrome +
-        WebGPU), shareable via URL with no install.
-      </li>
-    </ul>
-
-    <h3>What we hope to deliver (aspirational)</h3>
+  <section id="terrain">
+    <h3>Terrain Generation &amp; Erosion</h3>
+    <p style="font-style:italic; color:var(--muted); margin-bottom:0.5rem; margin-top:0.15rem;">Heightmap synthesis via layered noise functions, with physically-simulated hydraulic erosion, sediment transport, and tectonic uplift.</p>
 
     <p>
-      If we get ahead of schedule, we'd like to add:
+      A 512&times;512 heightmap uses 7-octave fBm Perlin noise (Perlin, 1985) with domain warping (Quilez) to break grid alignment, plus a radial island falloff and Gaussian blur.
     </p>
+    <p>
+      <strong>Sobel Normal Estimation</strong> &mdash; a 3&times;3 Sobel operator converts heightmap gradients to surface normals with a full 10-level mip chain, computed once at init.<br>
+      <strong>MFD routing</strong> (Tarboton, 1997) distributes drainage across all 8 neighbors over 250 iterations.<br>
+      <strong>Stream Power Erosion</strong> (Willgoose et al., 1991) carves valleys via <code>dh/dt = &minus;K &middot; A<sup>m</sup> &middot; (&part;h/&part;x)</code>, with K spatially modulated for rock-layer banding.<br>
+      <strong>Sediment Transport &amp; Deposition</strong> &mdash; capacity model t<sub>c</sub> = K<sub>T</sub>&middot;A<sup>M</sup>&middot;slope (K<sub>T</sub>&nbsp;=&nbsp;0.010) deposits excess sediment at rate 0.08 to fill valleys and form alluvial fans.<br>
+      <strong>Thermal erosion</strong> across three intensity zones (K<sub>T</sub> = 0.025 / 0.010 / 0.012) redistributes material on over-steepened slopes, producing talus fans. Each outer iteration runs 40, 6, and 12 thermal passes respectively.<br>
+      <strong>Uplift / isostatic rebound</strong> (rate 0.0003) maintains topographic relief throughout the simulation.<br>
+      <strong>HBAO</strong> (Bavoil et al., 2008) ray-marches 8 directions over a 20-texel radius to compute horizon-based ambient occlusion once at init.<br>
+      <strong>Crevice AO</strong> &mdash; screen-space 4-neighbor height average; <code>ao = clamp(1 &minus; 2.5 &middot; max(0, h_avg &minus; h), 0.4, 1.0)</code> darkens local concavities.<br>
+      <strong>Soft Ray-Marched Shadows</strong> (Quilez, 2010) &mdash; 50-step march with adaptive step size; penumbra softness scales as <code>min(res, softness &middot; dist / step_dist)</code>, clamped to [0.2, 1.0].<br>
+      <strong>Triplanar texturing</strong> (GPU Gems 3&ndash;style projection) &mdash; noise projected on XZ/XY/YZ planes weighted by |N|&sup2; eliminates UV stretching on steep slopes.<br>
+      <strong>Vegetation</strong> &mdash; up to 50,000 grass instances placed by a compute shader (height [0.12&ndash;0.28], N&middot;y &ge; 0.75, log drainage &le; 2.2); crossed-quad blades taper and sway sinusoidally with wind via <code>drawIndexedIndirect</code>.
+    </p>
+  </section>
 
+  <section id="ocean">
+    <h3>Ocean</h3>
+    <p style="font-style:italic; color:var(--muted); margin-bottom:0.5rem; margin-top:0.15rem;">Frequency-domain wave synthesis using the Phillips spectrum with real-time FFT surface reconstruction.</p>
+
+    <p>
+      <strong>Phillips Wave Spectrum</strong> (Tessendorf, 2001) &mdash; P(k) = A&middot;exp(&minus;1/(kL)&sup2;)/k⁴&middot;(k̂&middot;ŵ)⁶, wind speed 20&nbsp;m/s, amplitude A&nbsp;=&nbsp;80, gravity dispersion &omega;(k)&nbsp;=&nbsp;&radic;(g|k|).<br>
+      <strong>Complex Gaussian Initialization</strong> &mdash; Box-Muller transform seeds h&#x2080;(k) and conjugate h&#x2080;*(&minus;k) to guarantee a real-valued surface.<br>
+      <strong>FFT Ocean Surface</strong> (Cooley &amp; Tukey, 1965) &mdash; radix-2 butterfly IFFT, 128&times;128, 7 stages with bit-reversal permutation and shared-memory caching.<br>
+      <strong>Fresnel Reflectance</strong> (Schlick, 1994) &mdash; F&nbsp;=&nbsp;0.02&nbsp;+&nbsp;0.98(1&minus;NdotV)⁵ with foam masking at wave crests.<br>
+      <strong>Reference Variation Note:</strong> Only height and slope displacement computed; Gerstner-style choppy horizontal displacement omitted to stay within the 128&times;128 grid budget.
+    </p>
+  </section>
+
+  <section id="atmosphere">
+    <h3>Atmosphere &amp; Sky</h3>
+    <p style="font-style:italic; color:var(--muted); margin-bottom:0.5rem; margin-top:0.15rem;">Precomputed transmittance LUT enabling single-scattering Rayleigh and Mie sky rendering, volumetric clouds, and procedural celestial bodies.</p>
+
+    <p>
+      Sky rendering follows the <strong>precomputed atmospheric scattering</strong> approach of Bruneton &amp; Neyret (2008), building a 256&times;64 transmittance LUT at startup encoding Rayleigh and Mie optical depth over 40 integration steps.
+      <br><strong>Reference Variation Note:</strong> The full Bruneton &amp; Neyret framework precomputes irradiance and in-scatter LUTs for multi-order scattering; we implement only single-scattering with the transmittance LUT for a practical real-time trade-off.
+    </p>
+    <p>
+      <strong>Rayleigh Phase Function</strong> (3/16&pi;)(1&nbsp;+&nbsp;cos²&theta;) models wavelength-dependent blue-sky scattering.<br>
+      <strong>Henyey-Greenstein</strong> (Henyey &amp; Greenstein, 1941) Mie phase function (g&nbsp;=&nbsp;0.3) is used for atmospheric scattering; the fragment shader ray-marches 16 steps, sampling the LUT for sun transmittance at each step. Bilinear interpolation is performed manually via four <code>textureLoad</code> calls for WebGPU portability.<br>
+      <strong>Sun &amp; moon disks</strong> are rendered as analytical disks; the moon adds limb darkening (1&nbsp;&minus;&nbsp;0.35(1&nbsp;&minus;&nbsp;&radic;&mu;)) and a soft corona glow.<br>
+      <strong>Stars &amp; Milky Way</strong> (Quilez) use per-cell hashing in azimuth/altitude space with galactic-latitude density variation, and a three-octave noise band with a galactic-center luminosity boost.<br>
+      <strong>Volumetric clouds</strong> are ray-marched between 2200&ndash;4500&nbsp;m using 4-octave value noise, Beer&ndash;Lambert transmittance, and a Henyey-Greenstein phase function (g&nbsp;=&nbsp;0.65&nbsp;/&nbsp;&minus;0.30) with four shadow-ray probes per sample.<br>
+      <strong>Bird Flocking</strong> &mdash; orientation-based flocking (Hoetzlein Flock2, 2024) blends desired headings from visible neighbors; 6 forward probes at 320-unit lookahead steer away from terrain via altitude-gradient forces with Hermite blend 180&ndash;260 m.<br>
+      <strong>Reference Variation Note:</strong> The standard Henyey-Greenstein uses a single lobe; for clouds we use a dual-lobe powder-sugar approximation to reproduce silver-lining and dark-center effects.
+    </p>
+  </section>
+
+  <section id="post">
+    <h3>Post-Processing</h3>
+    <p style="font-style:italic; color:var(--muted); margin-bottom:0.5rem; margin-top:0.15rem;">HDR bloom cascade, ACES filmic tone mapping, and 4&times; MSAA for a cinematic final image.</p>
+    <p>
+      An HDR <strong>bloom</strong> pipeline thresholds bright pixels via a soft-knee luminance curve
+      (threshold 0.80, knee 0.30), downsamples through 4 cascade levels with a 2&times;2 box and
+      cross-tap filter, upsamples with weighted taps, then composites onto the HDR buffer. The full image
+      is tone-mapped with <strong>ACES</strong> (Academy, 2014) and gamma-corrected (&gamma;&nbsp;=&nbsp;2.2) before
+      display. <strong>4&times; MSAA</strong> is applied at the render target level.
+    </p>
+  </section>
+
+  <section id="problems">
+    <h3>Problems encountered</h3>
+    <p class="subsection-lede">How we diagnosed and addressed the main engineering risks.</p>
     <ul>
       <li>
-        <strong>Interactive rainfall:</strong> Clicking on the terrain places a water source that
-        runs the erosion simulation live, visibly carving new channels in real time.
+        <strong>Reference fidelity vs. runtime constraints:</strong> Several techniques from our references required multi-pass precomputation or runtime dependencies that would have introduced unacceptable load times in a browser with no server backend. We tackled this by scoping each feature to the most impactful subset for real-time use &mdash; for example, single-scattering-only atmosphere and height-only ocean displacement &mdash; and validating look and stability before adding complexity.
       </li>
       <li>
-        <strong>Foam and whitecaps:</strong> Driven by the Jacobian of the wave displacement field
-        as described in Tessendorf's paper, so waves crest and foam where they're steepest.
+        <strong>CPU vs. GPU workload partitioning:</strong> Deciding which passes to run on the CPU versus as GPU compute shaders was a recurring challenge. Heightmap generation stayed on the CPU for flexibility, while erosion, AO, normals, and ocean FFT moved to GPU compute shaders. We fixed incorrect intermediate results by carefully ordering dispatches and inserting explicit memory barriers between dependent passes (MFD routing &rarr; accumulation &rarr; erosion).
       </li>
       <li>
-        <strong>Slope-based terrain texturing:</strong> Rock on steep faces, grass on shallower
-        slopes, sand at the waterline, using the erosion flow map to inform material type.
-      </li>
-      <li>
-        <strong>Day/night cycle:</strong> Extending past sunset to a starfield sky.
-      </li>
-    </ul>
-
-    <h3>Things we aim to solve</h3>
-
-    <ul>
-      <li>
-        Can all three systems — terrain erosion, FFT ocean, and atmospheric scattering — be
-        integrated into a single coherent scene without visual artifacts at their boundaries, and
-        do shared parameters like sun direction and heightmap produce consistent results across
-        all three simultaneously?
-      </li>
-      <li>
-        Is WebGPU compute sufficient to run hydraulic erosion, FFT ocean reconstruction, and
-        atmospheric precomputation at interactive framerates in a browser, or do we need to
-        make significant compromises on simulation resolution or quality?
-      </li>
-      <li>
-        Does our precomputed atmospheric scattering implementation produce sky colors and aerial
-        perspective that match Bruneton's published reference renders across different sun angles,
-        from midday to golden hour?
-      </li>
-    </ul>
-
-    <h3>How we'll measure success</h3>
-
-    <ul>
-      <li>
-        <strong>Erosion:</strong> Side-by-side comparison of the heightmap before and after erosion,
-        checking that river valleys, ridges, and sediment deposits look geologically plausible.
-      </li>
-      <li>
-        <strong>Ocean:</strong> Visual comparison against reference FFT ocean renders; wave
-        choppiness and Phillips spectrum parameters tuned to match Beaufort scale descriptions.
-      </li>
-      <li>
-        <strong>Atmosphere:</strong> Comparison of sky gradient and aerial perspective against
-        Bruneton's own published validation renders.
-      </li>
-      <li>
-        <strong>Performance:</strong> The full integrated scene should run at ≥30fps at 1080p on an
-        M-series MacBook. We'll profile each subsystem individually using the WebGPU timestamp query
-        API to find any bottlenecks.
+        <strong>Integration across subsystems:</strong> Terrain, ocean, atmosphere, vegetation, birds, and post-processing share a single sun direction and HDR buffer. We isolated failures by toggling subsystems, comparing lighting in isolation vs. combined mode, and tightening depth conventions at the ocean&ndash;terrain boundary to remove z-fighting and inconsistent exposure.
       </li>
     </ul>
   </section>
 
-  <!-- ============ SCHEDULE ============ -->
-  <section id="schedule">
-    <h2>Schedule</h2>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Week</th>
-          <th>Focus</th>
-          <th>Tasks</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Week 1</strong><br>Apr 8–14</td>
-          <td>Scaffolding and individual prototypes</td>
-          <td>
-            &bull; fBm heightmap rendering as a mesh<br>
-            &bull; Flat FFT ocean with Phillips spectrum (no PBR yet)<br>
-            &bull; Bruneton precomputation pass running; sky visible in background<br>
-            &bull; Camera rig, time-of-day uniform, integration scaffolding
-          </td>
-        </tr>
-        <tr>
-          <td><strong>Week 2</strong><br>Apr 15–21</td>
-          <td>Core implementation</td>
-          <td>
-            &bull; Full Mei et al. erosion simulation (water flow, sediment transport, deposition); terrain showing eroded valleys<br>
-            &bull; FFT ocean with correct normals, basic Fresnel water material, tiling working<br>
-            &bull; Aerial perspective applied to terrain; sky color matching sun position<br>
-            &bull; Terrain heightmap feeding ocean waterline clip; sun direction shared across all three shaders
-          </td>
-        </tr>
-        <tr>
-          <td><strong>Week 3</strong><br>Apr 22–28</td>
-          <td>Integration and visual quality</td>
-          <td>
-            All four systems rendering in the same scene. Focus on integration correctness and visual
-            polish.<br><br>
-            &bull; Water reflections sampling the Bruneton sky<br>
-            &bull; Terrain normals feeding aerial perspective<br>
-            &bull; Slope-based texture blending (grass/rock/sand)<br>
-            &bull; Time-of-day slider working end-to-end<br>
-            &bull; <strong>Milestone deliverable:</strong> full scene video
-          </td>
-        </tr>
-        <tr>
-          <td><strong>Week 4</strong><br>Apr 29–May 4</td>
-          <td>Polish, stretch goals, presentation</td>
-          <td>
-            &bull; Performance profiling and any necessary optimizations<br>
-            &bull; Stretch goals if ahead of schedule (foam, interactive erosion)<br>
-            &bull; Final writeup and demo video<br>
-            &bull; Presentation prep
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <section id="lessons">
+    <h3>Lessons learned</h3>
+    <p class="subsection-lede">Process and design takeaways from the quarter.</p>
+    <ul>
+      <li>
+        <strong>Design before shader code:</strong> Early on, subsystem work started before the team fully cross-referenced papers and agreed on interfaces. That produced redundant work and backtracking. Later, we held short design reviews before merging WGSL changes; that reduced thrash and made integration predictable.
+      </li>
+      <li>
+        <strong>Measure in the real pipeline:</strong> Bugs often appeared only when systems ran together (e.g., HDR bloom interacting with sky exposure). Debugging in the full frame graph, with WebGPU timestamp queries where available, was more reliable than optimizing isolated demos.
+      </li>
+      <li>
+        <strong>Reference implementations are maps, not mandates:</strong> Adapting Bruneton-style LUTs, Tessendorf oceans, and erosion models to WGSL and browser limits required explicit tradeoff notes in code and in this report so future work (or portfolio readers) understand what was simplified and why.
+      </li>
+    </ul>
   </section>
 
-  <!-- ============ RESOURCES ============ -->
-  <section id="resources">
-    <h2>Resources</h2>
+  <section id="results">
+    <b>Results</b>
 
-    <h3>Papers</h3>
+    <p>
+      Below: <strong>Video</strong> of the running system, then still frames from the live WebGPU build. All scenes are procedural in real time in the browser; try the <a class="resource-link" href="https://terrawebgpu.vercel.app" target="_blank" rel="noopener noreferrer">interactive Terra demo</a>.
+    </p>
 
-    <ul>
-      <li>
-        Mei, X., Decaudin, P., Hu, B.-G. (2007). <em>Fast Hydraulic Erosion Simulation and
-        Visualization on GPU.</em> 15th Pacific Conference on Computer Graphics and Applications.
-        DOI: 10.1109/PG.2007.15.
-      </li>
-      <li>
-        Tessendorf, J. (2004). <em>Simulating Ocean Water.</em> SIGGRAPH Course Notes.
-      </li>
-      <li>
-        Bruneton, E., Neyret, F. (2008). <em>Precomputed Atmospheric Scattering.</em> Computer
-        Graphics Forum 27(4). DOI: 10.1111/j.1467-8659.2008.01245.x.
-      </li>
-    </ul>
+    <div class="video-container">
+      <iframe src="https://www.youtube.com/embed/ZRDevUtEO8Y" title="Terra &mdash; CS 184 final project video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+    </div>
+    <p class="video-caption">
+      <a class="resource-link" href="https://youtu.be/ZRDevUtEO8Y" target="_blank" rel="noopener noreferrer">Open video on YouTube</a>
+    </p>
 
-    <h3>Reference implementations (open source)</h3>
+    <p>
+      Screenshots from the interactive WebGPU build:
+    </p>
 
-    <ul>
-      <li>
-        <strong>WebGPU terrain erosion:</strong> GPU-Gang/WebGPU-Erosion-Simulation — TypeScript/WGSL,
-        implements the Mei et al. pipe model
-      </li>
-      <li>
-        <strong>WebGPU FFT ocean:</strong> Popov72/OceanDemo — BabylonJS + WebGPU, Tessendorf model
-      </li>
-      <li>
-        <strong>Bruneton WebGL2 demo:</strong> ebruneton/precomputed_atmospheric_scattering — the
-        original author's WebGL2 port (we'll need to translate GLSL to WGSL)
-      </li>
-      <li>
-        <strong>Bruneton WebGPU/WGSL port:</strong> TerrainView7 — independent WGSL implementation
-        with compute shader precomputation
-      </li>
-    </ul>
+    <div class="results-gallery">
+      <div class="gallery-item">
+        <img src="images/day.png" alt="Daytime scene showing terrain, ocean, and atmosphere">
+        <div class="caption">Day &mdash; Full sunlight with atmospheric scattering, ocean reflections, and vegetation</div>
+      </div>
+      <div class="gallery-item">
+        <img src="images/sunrise.png" alt="Sunrise scene with warm atmospheric colors">
+        <div class="caption">Sunrise &mdash; Low-angle sun driving Rayleigh/Mie scattering gradients</div>
+      </div>
+      <div class="gallery-item">
+        <img src="images/sunset.png" alt="Sunset scene with orange and purple sky">
+        <div class="caption">Sunset &mdash; Warm tones from long optical path through the atmosphere</div>
+      </div>
+      <div class="gallery-item">
+        <img src="images/night.png" alt="Night scene with stars and moonlight">
+        <div class="caption">Night &mdash; Procedural star field, Milky Way band, and moon with limb darkening</div>
+      </div>
+      <div class="gallery-item">
+        <img src="images/midnight.png" alt="Midnight scene with dark sky">
+        <div class="caption">Midnight &mdash; Moonlit terrain with volumetric cloud scattering</div>
+      </div>
+      <div class="gallery-item">
+        <img src="images/mountains.png" alt="Mountain terrain close-up">
+        <div class="caption">Mountains &mdash; Hydraulic erosion detail with altitude-based biome blending</div>
+      </div>
+      <div class="gallery-item">
+        <img src="images/specular.png" alt="Specular lighting on mountains">
+        <div class="caption">Specular &mdash; Specular lighting on mountains during sunset</div>
+      </div>
+      <div class="gallery-item">
+        <img src="images/birds.png" alt="Birds flying around mountain">
+        <div class="caption">Birds &mdash; Birds flying around the mountain</div>
+      </div>
+    </div>
+  </section>
 
-    <h3>Platform and tooling</h3>
+  <section id="References">
+    <b>References</b>
 
-    <ul>
-      <li><strong>Language:</strong> TypeScript</li>
-      <li><strong>Graphics API:</strong> WebGPU (Chrome 113+ on macOS via Metal backend)</li>
-      <li><strong>Shader language:</strong> WGSL</li>
-      <li><strong>Build tooling:</strong> Vite or Next.js</li>
+    <ol>
       <li>
-        <strong>Hardware:</strong> Apple Silicon MacBooks (M1/M2/M3) — all team members have these,
-        and all simulation runs client-side in the browser with no cloud compute required
+        <strong>Bruneton, E. &amp; Neyret, F.</strong> (2008). <em>Precomputed Atmospheric Scattering.</em>
+        Computer Graphics Forum (EGSR). &mdash; Transmittance LUT + in-scattering formulation used in
+        <code>atmosphere_precompute.wgsl</code> and <code>atmosphere.wgsl</code>.
       </li>
+      <li>
+        <strong>Tessendorf, J.</strong> (2001). <em>Simulating Ocean Water.</em> SIGGRAPH Course Notes.
+        &mdash; Phillips spectrum and gravity-wave dispersion relation for <code>ocean_fft.wgsl</code>.
+      </li>
+      <li>
+        <strong>Cooley, J. W. &amp; Tukey, J. W.</strong> (1965). <em>An Algorithm for the Machine
+        Calculation of Complex Fourier Series.</em> Mathematics of Computation.
+        &mdash; Radix-2 butterfly FFT algorithm implemented in the IFFT compute shader.
+      </li>
+      <li>
+        <strong>Tarboton, D. G.</strong> (1997). <em>A New Method for the Determination of Flow
+        Directions and Upslope Areas in Grid Digital Elevation Models.</em> Water Resources Research.
+        &mdash; Multi-Flow Direction (MFD) routing in <code>erosion.wgsl</code>.
+      </li>
+      <li>
+        <strong>Willgoose, G., Bras, R. L., &amp; Rodriguez-Iturbe, I.</strong> (1991). <em>A Coupled
+        Channel Network Growth and Hillslope Evolution Model.</em> Water Resources Research.
+        &mdash; Stream Power Erosion model basis.
+      </li>
+      <li>
+        <strong>Bavoil, L. et al.</strong> (2008). <em>Image-Space Horizon-Based Ambient Occlusion.</em>
+        SIGGRAPH Talks. &mdash; HBAO technique adapted for heightmap-space AO in <code>ao.wgsl</code>.
+      </li>
+      <li>
+        <strong>Henyey, L. G. &amp; Greenstein, J. L.</strong> (1941). <em>Diffuse Radiation in the
+        Galaxy.</em> Astrophysical Journal. &mdash; Phase function used for Mie scattering and cloud
+        single-scattering.
+      </li>
+      <li>
+        <strong>Perlin, K.</strong> (1985). <em>An Image Synthesizer.</em> SIGGRAPH Proceedings.
+        &mdash; Perlin noise used for heightmap fBm generation and cloud density fields.
+      </li>
+      <li>
+        <strong>ACES Color Encoding System.</strong> Academy of Motion Picture Arts and Sciences, 2014.
+        &mdash; Tone mapping curve used throughout the pipeline.
+      </li>
+      <li>
+        <strong>Schlick, C.</strong> (1994). <em>An Inexpensive BRDF Model for Physically-Based Rendering.</em>
+        Graphics Gems IV. &mdash; Fresnel approximation in water shading.
+      </li>
+      <li>
+        <strong>NVIDIA.</strong> (2008). <em>GPU Gems 3.</em> Addison-Wesley.
+        &mdash; Triplanar-style material blending for procedural terrain shading.
+      </li>
+      <li>
+        <strong>Hoetzlein, R.</strong> (2024). <em>Flock2</em> orientation-based flocking (reference implementation).
+        &mdash; Informed bird steering behavior.
+      </li>
+      <li>
+        <strong>Quilez, I.</strong> <em>Procedural techniques: domain warping, value noise, hash
+        functions.</em> <a class="resource-link" href="https://iquilezles.org" target="_blank" rel="noopener noreferrer">iquilezles.org</a>.
+        &mdash; Informed heightmap domain warping and the hash-based star placement scheme.
+      </li>
+    </ol>
+  </section>
+
+  <section id="Contributions">
+    <b>Contributions</b>
+    <p class="subsection-lede">Work split for grading; each member shipped multiple passes in the repo above.</p>
+    <ul class="contributions-list">
+      <li><strong>Sarvagya Somvanshi:</strong> Terrain mesh and materials, vegetation placement and animation, stream power and thermal erosion, cloud look and iteration on ambient lighting.</li>
+      <li><strong>Mohan Xu:</strong> Ocean rendering and FFT-based waves (Tessendorf / Phillips), bird flocking and interaction with terrain.</li>
+      <li><strong>Owen Ye:</strong> Atmosphere and sky dome, sun and moon disks, sunrise/sunset lighting, early sky texture passes.</li>
+      <li><strong>Afreen Shameem:</strong> Initial heightmap / procedural island generation, HDR bloom, ACES tone mapping, MSAA integration.</li>
     </ul>
   </section>
 
